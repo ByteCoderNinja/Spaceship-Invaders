@@ -17,13 +17,13 @@ public class KeyHandler implements KeyListener
 
         switch(code)
         {
-            case KeyEvent.VK_W : upPressed = true;
+            case KeyEvent.VK_UP : upPressed = true;
             break;
-            case KeyEvent.VK_S : downPressed = true;
+            case KeyEvent.VK_DOWN : downPressed = true;
             break;
-            case KeyEvent.VK_A : leftPressed = true;
+            case KeyEvent.VK_LEFT : leftPressed = true;
             break;
-            case KeyEvent.VK_D : rightPressed = true;
+            case KeyEvent.VK_RIGHT : rightPressed = true;
         }
     }
 
@@ -34,13 +34,13 @@ public class KeyHandler implements KeyListener
 
         switch(code)
         {
-            case KeyEvent.VK_W : upPressed = false;
+            case KeyEvent.VK_UP : upPressed = false;
                 break;
-            case KeyEvent.VK_S : downPressed = false;
+            case KeyEvent.VK_DOWN : downPressed = false;
                 break;
-            case KeyEvent.VK_A : leftPressed = false;
+            case KeyEvent.VK_LEFT : leftPressed = false;
                 break;
-            case KeyEvent.VK_D : rightPressed = false;
+            case KeyEvent.VK_RIGHT : rightPressed = false;
         }
     }
 }

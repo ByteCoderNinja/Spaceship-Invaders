@@ -1,34 +1,43 @@
 package main;
 
+import entity.Player;
+import tile.TileManager;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class GamePanel extends JPanel implements Runnable
 {
     // SCREEN SETTINGS
-    final int originalTileSize = 16;
-    final int scale = 3;
+    static final int originalTileSize = 16;
+    public static final int scale = 3;
 
-    final int tileSize = originalTileSize * scale;
-    final int maxScreenColumns = 16;
-    final int maxScreenRows = 12;
-    final int screenWidth = tileSize * maxScreenColumns;
-    final int screenHeight = tileSize * maxScreenRows;
+    public final int tileSize = originalTileSize * scale;
+    public final int maxScreenColumns = 16;
+    public final int maxScreenRows = 12;
+    public final int screenWidth = tileSize * maxScreenColumns;
+    public final int screenHeight = tileSize * maxScreenRows;
+
+    //WORLD SETTINGS
+    public final int maxWorldColumns = 40;
+    public final int maxWorldRows = 40;
+    public final int worldWidth = tileSize * maxWorldColumns;
+    public final int worldHeight = tileSize * maxWorldRows;
+    public
 
     //FPS
     int FPS = 60;
 
+    TileManager tileM = new TileManager(this);
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
+    public CollisionChecker collisionChecker = new CollisionChecker(this);
+    public Player player = new Player(this, keyH);
 
-    // Set player's default position
-    int playerX = 100;
-    int playerY = 100;
-    int playerSpeed = 4;
     public GamePanel()
     {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
-        this.setBackground(Color.green);
+        this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
@@ -44,7 +53,7 @@ public class GamePanel extends JPanel implements Runnable
     @Override
     public void run()
     {
-        double drawInterval = (double) 1000000000 /FPS;
+        double drawInterval = (double) 1000000000 / FPS;
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
@@ -68,33 +77,18 @@ public class GamePanel extends JPanel implements Runnable
 
     public void update()
     {
-        if (keyH.upPressed)
-        {
-            playerY -= playerSpeed;
-        }
-        else if (keyH.downPressed)
-        {
-            playerY += playerSpeed;
-        }
-        else if (keyH.leftPressed)
-        {
-            playerX -= playerSpeed;
-        }
-        else if (keyH.rightPressed)
-        {
-            playerX += playerSpeed;
-        }
+        player.update();
     }
 
     public void paintComponent(Graphics graphics1)
     {
+
         super.paintComponent(graphics1);
 
-        Graphics graphics2 = (Graphics2D)graphics1;
+        Graphics2D graphics2 = (Graphics2D)graphics1;
 
-        graphics2.setColor(Color.red);
-
-        graphics2.fillRect(playerX, playerY, tileSize, tileSize);
+        tileM.draw(graphics2);
+        player.draw(graphics2);
 
         graphics2.dispose();
     }
