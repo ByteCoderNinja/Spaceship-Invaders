@@ -49,7 +49,7 @@ public class TileManager
 
             tile[4] = new Tile(); //Door Photo
             tile[4].image = img.getSubimage(64, 132, 32, 16);
-            tile[4].collision = true;
+           // tile[4].collision = true;
 
             tile[5] = new Tile(); //Door Button
             tile[5].image = img.getSubimage(65, 160, 31, 31);
