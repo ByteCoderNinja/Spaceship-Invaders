@@ -8,7 +8,7 @@ public class Entity
     public int worldX, worldY;
     public int speed;
 
-    public BufferedImage[] idle, turn, walk, run, hurt, dead, jump, attack, fire;
+    public BufferedImage[] idle, walk, hurt, dead, attack, fire;
     public String direction;
 
     public int spriteCounter = 0;

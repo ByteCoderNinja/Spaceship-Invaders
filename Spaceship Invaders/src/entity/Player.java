@@ -19,7 +19,7 @@ public class Player extends Entity
     public final int screenX;
     public final int screenY;
 
-    int hasKey = 0;
+    public int hasKey = 0;
 
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler)
@@ -55,8 +55,11 @@ public class Player extends Entity
         {
             BufferedImage img = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/predatormask_finalizat.png"));
             idle = cutImage(img,0,0, new int[]{230, 230, 230}, new int[]{396, 404, 413});
-            turn = cutImage(img, 0, 416, new int[]{228, 228, 228}, new int[]{399, 399, 395});
             walk = cutImage(img, 0, 816, new int[]{225, 225, 223, 237, 238, 237}, new int[]{400, 403, 405, 390, 393, 393});
+            hurt = cutImage(img, 0, 1630, new int[]{227, 229, 235, 238}, new int[]{395, 390, 387, 383});
+            dead = cutImage(img, 0, 2024, new int[]{336, 379, 353, 374, 368}, new int[]{356, 318, 254, 231, 239});
+            attack = cutImage(img, 0, 2383, new int[]{234, 292, 443, 541}, new int[]{397, 397, 397, 397});
+            fire = cutImage(img, 0, 2781, new int[]{238, 268, 228, 240, 305, 385, 405, 485, 504, 518}, new int[]{392, 389, 394, 400, 404, 405, 399, 399, 399, 399});
         }
         catch(IOException e)
         {
@@ -117,6 +120,14 @@ public class Player extends Entity
             direction = "walk_right";
             i = 0;
         }
+        else if (keyHandler.attackSpace)
+        {
+            direction = "attack";
+        }
+        else if (keyHandler.fireF)
+        {
+            direction = "fire";
+        }
         else
         {
             direction = "idle";
@@ -153,7 +164,13 @@ public class Player extends Entity
             {
                 case "idle":
                     spriteNum = (spriteNum < idle.length - 1) ? ++spriteNum : 0;
-                break;
+                    break;
+                case "attack":
+                    spriteNum = (spriteNum < attack.length - 1) ? ++spriteNum : 0;
+                    break;
+                case "fire":
+                    spriteNum = (spriteNum < fire.length - 1) ? ++spriteNum : 0;
+                    break;
                 default:
                     spriteNum = (spriteNum < walk.length - 1) ? ++spriteNum : 0;
             }
@@ -172,13 +189,23 @@ public class Player extends Entity
                 case "Key":
                     ++hasKey;
                     gamePanel.obj[i] = null;
+                    gamePanel.ui.showMessage("You picked up KeyCard!");
                     break;
                 case "Door":
                     if (hasKey > 0)
                     {
                         gamePanel.obj[i] = null;
                         --hasKey;
+                        gamePanel.ui.showMessage("You opened the Door!");
                     }
+                    else
+                    {
+                        gamePanel.ui.showMessage("You need a KeyCard!");
+                    }
+                    break;
+                case "AutoDestroyButton":
+                    gamePanel.ui.gameFinished = true;
+                    gamePanel.stopMusic();
                     break;
             }
         }
@@ -188,19 +215,40 @@ public class Player extends Entity
     public void draw(Graphics graphics2)
     {
         BufferedImage image = null;
+        int imageSizeX = gamePanel.tileSize;
 
         switch (direction)
         {
-            case "walk_left": image = mirrorImage(walk[spriteNum]);
-            break;
-            case "walk_right": image = walk[spriteNum];
-            break;
-            case "idle": spriteNum = (spriteNum > idle.length - 1) ? 0 : spriteNum;
+            case "walk_left":
+                image = mirrorImage(walk[spriteNum]);
+                break;
+            case "walk_right":
+                image = walk[spriteNum];
+                break;
+            case "idle":
+                spriteNum = (spriteNum > idle.length - 1) ? 0 : spriteNum;
                 image = (i == 0) ? idle[spriteNum] : mirrorImage(idle[spriteNum]);
-            break;
-            default: image = (i == 0) ? walk[spriteNum] : mirrorImage(walk[spriteNum]);
+                break;
+            case "attack":
+                image = (i == 0) ? attack[spriteNum] : mirrorImage(attack[spriteNum]);
+                if (spriteNum >= 2)
+                {
+                    imageSizeX = gamePanel.tileSize * 2;
+                }
+                break;
+            case "fire":
+                image = (i == 0) ? fire[spriteNum] : mirrorImage(fire[spriteNum]);
+                if (spriteNum >= 5)
+                {
+                    imageSizeX = gamePanel.tileSize * 2;
+                }
+                break;
+            default:
+                image = (i == 0) ? walk[spriteNum] : mirrorImage(walk[spriteNum]);
         }
-        graphics2.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+
+        graphics2.drawImage(image, screenX, screenY, imageSizeX, gamePanel.tileSize, null);
     }
+
 
 }
