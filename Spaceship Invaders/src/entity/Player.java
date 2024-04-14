@@ -12,19 +12,17 @@ import java.io.IOException;
 
 public class Player extends Entity
 {
-    private int i = 0; //variable for player position (left/right)
-    GamePanel gamePanel;
+    private int left_right = 0; //variable for player position (left/right)
     KeyHandler keyHandler;
 
     public final int screenX;
     public final int screenY;
 
-    public int hasKey = 0;
 
 
     public Player(GamePanel gamePanel, KeyHandler keyHandler)
     {
-        this.gamePanel = gamePanel;
+        super(gamePanel);
         this.keyHandler = keyHandler;
 
         screenX = (gamePanel.screenWidth / 2) - (gamePanel.tileSize / 2);
@@ -46,6 +44,10 @@ public class Player extends Entity
         worldY = gamePanel.tileSize;
         speed = 4;
         direction = "idle";
+
+        //PLAYER STATUS
+        maxLife = 6;
+        life = maxLife;
     }
 
 
@@ -113,12 +115,12 @@ public class Player extends Entity
         else if (keyHandler.leftPressed)
         {
             direction = "walk_left";
-            i = 1;
+            left_right = 1;
         }
         else if (keyHandler.rightPressed)
         {
             direction = "walk_right";
-            i = 0;
+            left_right = 0;
         }
         else if (keyHandler.attackSpace)
         {
@@ -140,6 +142,10 @@ public class Player extends Entity
         //Check object collision
         int objIndex = gamePanel.collisionChecker.checkObject(this, true);
         pickUpObject(objIndex);
+
+        //CHECK NPC COLLISION
+        int npcIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
+        interactNPC(npcIndex);
 
         if (collisionOn == false)
         {
@@ -177,37 +183,21 @@ public class Player extends Entity
         }
     }
 
-
-    public void pickUpObject(int i)
+    private void interactNPC(int x)
     {
-        if (i != 1000)
+        if (x != 1000)
         {
-            String objectName = gamePanel.obj[i].name;
+            gamePanel.gameState = gamePanel.dialogueState;
+            gamePanel.npc[x].speak();
+        }
+    }
 
-            switch (objectName)
-            {
-                case "Key":
-                    ++hasKey;
-                    gamePanel.obj[i] = null;
-                    gamePanel.ui.showMessage("You picked up KeyCard!");
-                    break;
-                case "Door":
-                    if (hasKey > 0)
-                    {
-                        gamePanel.obj[i] = null;
-                        --hasKey;
-                        gamePanel.ui.showMessage("You opened the Door!");
-                    }
-                    else
-                    {
-                        gamePanel.ui.showMessage("You need a KeyCard!");
-                    }
-                    break;
-                case "AutoDestroyButton":
-                    gamePanel.ui.gameFinished = true;
-                    gamePanel.stopMusic();
-                    break;
-            }
+
+    public void pickUpObject(int x)
+    {
+        if (x != 1000)
+        {
+
         }
     }
 
@@ -227,24 +217,24 @@ public class Player extends Entity
                 break;
             case "idle":
                 spriteNum = (spriteNum > idle.length - 1) ? 0 : spriteNum;
-                image = (i == 0) ? idle[spriteNum] : mirrorImage(idle[spriteNum]);
+                image = (left_right == 0) ? idle[spriteNum] : mirrorImage(idle[spriteNum]);
                 break;
             case "attack":
-                image = (i == 0) ? attack[spriteNum] : mirrorImage(attack[spriteNum]);
+                image = (left_right == 0) ? attack[spriteNum] : mirrorImage(attack[spriteNum]);
                 if (spriteNum >= 2)
                 {
                     imageSizeX = gamePanel.tileSize * 2;
                 }
                 break;
             case "fire":
-                image = (i == 0) ? fire[spriteNum] : mirrorImage(fire[spriteNum]);
+                image = (left_right == 0) ? fire[spriteNum] : mirrorImage(fire[spriteNum]);
                 if (spriteNum >= 5)
                 {
                     imageSizeX = gamePanel.tileSize * 2;
                 }
                 break;
             default:
-                image = (i == 0) ? walk[spriteNum] : mirrorImage(walk[spriteNum]);
+                image = (left_right == 0) ? walk[spriteNum] : mirrorImage(walk[spriteNum]);
         }
 
         graphics2.drawImage(image, screenX, screenY, imageSizeX, gamePanel.tileSize, null);

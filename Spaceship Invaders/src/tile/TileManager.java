@@ -4,6 +4,7 @@ import main.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class TileManager
             tile[2].image = img1.getSubimage(256, 0, 63, 63);
 
             tile[3] = new Tile(); //Space Photo
-            tile[3].image = img2.getSubimage(880, 520, 798, 639);
+            tile[3].image = img2.getSubimage(0, 0, 1248, 1000);
             tile[3].collision = true;
 
             tile[4] = new Tile(); //Door Photo
@@ -55,15 +56,13 @@ public class TileManager
             tile[5].image = img1.getSubimage(128, 96, 30, 30);
 
             tile[6] = new Tile(); //Computer
-            tile[6].image = img2.getSubimage(880,0, 96, 65);
+            tile[6].image = rotateImage(img1.getSubimage(31,80, 65, 48), 90);
             tile[6].collision = true;
 
             tile[7] = new Tile(); //Obstacle for hiding
             tile[7].image = img1.getSubimage(96,144, 31, 47);
             tile[7].collision = true;
 
-            tile[8] = new Tile(); //Oxygen tube
-            tile[8].image = img2.getSubimage(1371,1, 418, 510);
 
         }
         catch (IOException e)
@@ -71,6 +70,30 @@ public class TileManager
             e.printStackTrace();
         }
     }
+
+    public static BufferedImage rotateImage(BufferedImage image, double angle)
+    {
+        double radians = Math.toRadians(angle);
+        double sin = Math.abs(Math.sin(radians));
+        double cos = Math.abs(Math.cos(radians));
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int newWidth = (int) Math.floor(width * cos + height * sin);
+        int newHeight = (int) Math.floor(height * cos + width * sin);
+
+        BufferedImage rotatedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = rotatedImage.createGraphics();
+        AffineTransform transform = new AffineTransform();
+        transform.translate((newWidth - width) / 2, (newHeight - height) / 2);
+        int x = width / 2;
+        int y = height / 2;
+        transform.rotate(radians, x, y);
+        g2d.setTransform(transform);
+        g2d.drawImage(image, 0, 0, null);
+        g2d.dispose();
+        return rotatedImage;
+    }
+
 
     public void loadMap(String filePath)
     {
