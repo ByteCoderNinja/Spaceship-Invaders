@@ -1,19 +1,17 @@
 package main;
 
+import entity.Entity;
 import object.OBJ_Heart;
-import object.OBJ_key;
-import object.SuperObject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.text.DecimalFormat;
 
 public class UI
 {
     GamePanel gamePanel;
     Graphics2D graphics2D;
     Font arial_40, arial_80B;
-    BufferedImage heart_full, hear_half, heart_blank;
+    BufferedImage heart_full, heart_half, heart_blank;
     public boolean messageOn = false;
     public String message = "";
     int messageCounter = 0;
@@ -30,9 +28,9 @@ public class UI
         arial_80B = new Font("Arial", Font.BOLD, 70);
 
         //CREATE HUD OBJECT
-        SuperObject heart = new OBJ_Heart(gamePanel);
+        Entity heart = new OBJ_Heart(gamePanel);
         heart_full = heart.image;
-        hear_half = heart.image2;
+        heart_half = heart.image2;
         heart_blank = heart.image3;
     }
 
@@ -79,13 +77,34 @@ public class UI
 
     private void drawPlayerLife()
     {
+    //    gamePanel.player.life = 6;
+
         int x = gamePanel.tileSize/2;
         int y = gamePanel.tileSize/2;
         int i = 0;
 
+        //DRAW MAX LIFE
         while (i < gamePanel.player.maxLife/2)
         {
             graphics2D.drawImage(heart_blank, x, y, null);
+            ++i;
+            x += gamePanel.tileSize;
+        }
+
+        //RESET
+        x = gamePanel.tileSize/2;
+        y = gamePanel.tileSize/2;
+        i = 0;
+
+        //DRAW CURRENT LIFE
+        while (i < gamePanel.player.life)
+        {
+            graphics2D.drawImage(heart_half, x, y, null);
+            ++i;
+            if (i < gamePanel.player.life)
+            {
+                graphics2D.drawImage(heart_full, x, y, null);
+            }
             ++i;
             x += gamePanel.tileSize;
         }

@@ -2,11 +2,13 @@ package main;
 
 import entity.Entity;
 import entity.Player;
-import object.SuperObject;
 import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class GamePanel extends JPanel implements Runnable
 {
@@ -21,8 +23,8 @@ public class GamePanel extends JPanel implements Runnable
     public final int screenHeight = tileSize * maxScreenRows;
 
     //WORLD SETTINGS
-    public final int maxWorldColumns = 40;
-    public final int maxWorldRows = 40;
+    public final int maxWorldColumns = 54;
+    public final int maxWorldRows = 52;
 
     //FPS
     int FPS = 60;
@@ -35,12 +37,14 @@ public class GamePanel extends JPanel implements Runnable
     public CollisionChecker collisionChecker = new CollisionChecker(this);
     public AssetSetter assetSetter = new AssetSetter(this);
     public UI ui = new UI(this);
+    public EventHandler eventHandler = new EventHandler(this);
     Thread gameThread;
 
     //ENTITY AND OBJECT
-    public Player player = new Player(this, keyH);
-    public SuperObject[] obj = new SuperObject[10];
+    public Player player = Player.getInstance(this, keyH);
+    public Entity[] obj = new Entity[10];
     public Entity[] npc = new Entity[10];
+    ArrayList<Entity> entities = new ArrayList<Entity>();
 
     //GAME STATE
     public int gameState;
@@ -145,25 +149,53 @@ public class GamePanel extends JPanel implements Runnable
             //TILE
             tileM.draw(graphics2d);
 
-            for (int i = 0; i < obj.length; i++)
-            {
-                if (obj[i] != null)
-                {
-                    obj[i].draw(graphics2d, this);
-                }
-            }
-            //NPC
-            for (int i = 0; i < npc.length; i++)
+            //ADD ENTITIES TO THE LIST
+            entities.add(player);
+
+            for (int i = 0; i < npc.length; ++i)
             {
                 if (npc[i] != null)
                 {
-                    npc[i].draw(graphics2d);
+                    entities.add(npc[i]);
                 }
             }
 
-            //PLAYER
-            player.draw(graphics2d);
+            for (int i = 0; i < obj.length; ++i)
+            {
+                if (obj[i] != null)
+                {
+                    entities.add(obj[i]);
+                }
+            }
 
+            //SORT
+            Collections.sort(entities, new Comparator<Entity>()
+            {
+                @Override
+                public int compare(Entity e1, Entity e2)
+                {
+                    int result = Integer.compare(e1.worldY, e2.worldY);
+                    return result;
+                }
+
+                @Override
+                public boolean equals(Object obj)
+                {
+                    return false;
+                }
+            });
+
+            //DRAW ENTITIES
+            for (int i = 0; i < entities.size(); ++i)
+            {
+                entities.get(i).draw(graphics2d);
+            }
+
+            //EMPTY ENTITY LIST
+            for (int i = 0; i < entities.size(); ++i)
+            {
+                entities.remove(i);
+            }
 
             //UI
             ui.draw(graphics2d);

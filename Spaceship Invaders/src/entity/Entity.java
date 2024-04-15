@@ -1,6 +1,7 @@
 package entity;
 
 import main.GamePanel;
+import main.UtilityTool;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -14,7 +15,7 @@ public class Entity
     private int left_right = 0;
 
     public BufferedImage[] idle, walk, hurt, dead, attack, fire;
-    public String direction;
+    public String direction = "walk_down";
 
     public int spriteCounter = 0;
     public int spriteNum = 1;
@@ -24,6 +25,11 @@ public class Entity
     public int actionLockCounter = 0;
     String[] dialogues = new String[20];
     int dialogueIndex = 0;
+    public BufferedImage image, image2, image3;
+    public String name;
+    public UtilityTool uTool = new UtilityTool();
+    public boolean collision = false;
+
 
     //CHARACTER STATUS
     public int maxLife;
@@ -89,7 +95,6 @@ public class Entity
 
     public void draw(Graphics2D graphics2D)
     {
-        BufferedImage image = null;
         int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
 
@@ -103,6 +108,12 @@ public class Entity
 
             switch (direction)
             {
+                case "walk_down":
+                case "walk_up":
+                    if (name != "Door") {
+                        image = (left_right == 0) ? walk[spriteNum] : mirrorImage(walk[spriteNum]);
+                    } else {}
+                    break;
                 case "walk_left":
                     image = mirrorImage(walk[spriteNum]);
                     left_right = 1;
@@ -129,8 +140,6 @@ public class Entity
                         imageSizeX = gamePanel.tileSize * 2;
                     }
                     break;
-                default:
-                    image = (left_right == 0) ? walk[spriteNum] : mirrorImage(walk[spriteNum]);
             }
 
             graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);

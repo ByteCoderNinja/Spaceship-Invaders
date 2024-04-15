@@ -2,7 +2,6 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
-import object.SuperObject;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,13 +13,14 @@ public class Player extends Entity
 {
     private int left_right = 0; //variable for player position (left/right)
     KeyHandler keyHandler;
+    private static Player INSTANCE;
 
     public final int screenX;
     public final int screenY;
 
 
 
-    public Player(GamePanel gamePanel, KeyHandler keyHandler)
+    private Player(GamePanel gamePanel, KeyHandler keyHandler)
     {
         super(gamePanel);
         this.keyHandler = keyHandler;
@@ -38,10 +38,20 @@ public class Player extends Entity
     }
 
 
+    public static Player getInstance(GamePanel gamePanel, KeyHandler keyHandler)
+    {
+        if (INSTANCE == null)
+        {
+            INSTANCE = new Player(gamePanel, keyHandler);
+        }
+        return INSTANCE;
+    }
+
+
     public void setDefaultValues()
     {
-        worldX = gamePanel.tileSize;
-        worldY = gamePanel.tileSize;
+        worldX = gamePanel.tileSize*8;
+        worldY = gamePanel.tileSize*7;
         speed = 4;
         direction = "idle";
 
@@ -135,13 +145,16 @@ public class Player extends Entity
             direction = "idle";
         }
 
-        //Check tile collision
+        //CHECK TILE COLLISION
         collisionOn = false;
         gamePanel.collisionChecker.checkTile(this);
 
-        //Check object collision
+        //CHECK OBJECT COLLISION
         int objIndex = gamePanel.collisionChecker.checkObject(this, true);
         pickUpObject(objIndex);
+
+        //CHECK EVENT
+        gamePanel.eventHandler.checkEvent();
 
         //CHECK NPC COLLISION
         int npcIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);

@@ -1,17 +1,17 @@
 package object;
 
+import entity.Entity;
 import main.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
-public class OBJ_key extends SuperObject
+public class OBJ_key extends Entity
 {
-    GamePanel gamePanel;
 
     public OBJ_key(GamePanel gamePanel)
     {
-        this.gamePanel = gamePanel;
+        super(gamePanel);
 
         name = "Key";
         try

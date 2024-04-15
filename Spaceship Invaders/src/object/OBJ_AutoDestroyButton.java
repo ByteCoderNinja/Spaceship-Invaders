@@ -1,13 +1,17 @@
 package object;
 
+import entity.Entity;
+import main.GamePanel;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class OBJ_AutoDestroyButton extends SuperObject
+public class OBJ_AutoDestroyButton extends Entity
 {
-    public OBJ_AutoDestroyButton()
+    public OBJ_AutoDestroyButton(GamePanel gamePanel)
     {
+        super(gamePanel);
         name = "AutoDestroyButton";
         try
         {
