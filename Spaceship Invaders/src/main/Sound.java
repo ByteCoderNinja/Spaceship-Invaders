@@ -12,9 +12,12 @@ public class Sound
 
     public Sound()
     {
-        soundURL[0] = getClass().getClassLoader().getResource("sound/Fast Forward Space Travelling  Sound Effect WAV.wav");
-        soundURL[1] = getClass().getClassLoader().getResource("sound/Sound Effects - Walking on Solid Metal WAV.wav");
+        soundURL[0] = getClass().getClassLoader().getResource("sound/Fast Forward Space Travelling  Sound Effect WAV-2.wav");
+        soundURL[1] = getClass().getClassLoader().getResource("sound/Sound Effects - Walking on Solid Metal WAV-2.wav");
         soundURL[2] = getClass().getClassLoader().getResource("sound/Space ship door opening WAV.wav");
+        soundURL[3] = getClass().getClassLoader().getResource("sound/Damage Sound effect.wav");
+        soundURL[4] = getClass().getClassLoader().getResource("sound/MenuMusic.wav");
+
     }
 
     public void setFile(int i)

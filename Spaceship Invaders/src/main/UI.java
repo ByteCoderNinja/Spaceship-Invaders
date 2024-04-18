@@ -3,8 +3,11 @@ package main;
 import entity.Entity;
 import object.OBJ_Heart;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
 
 public class UI
 {
@@ -18,6 +21,7 @@ public class UI
     public boolean gameFinished = false;
     public String currentDialogue = "";
     public int commandNumber = 0;
+    public static boolean hasEntered = false;
 
 
     public UI(GamePanel gamePanel)
@@ -110,35 +114,58 @@ public class UI
         }
     }
 
-    private void drawTitleScreen()
-    {
-        graphics2D.setColor(new Color(48, 213, 200));
-        graphics2D.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
+    private void drawTitleScreen() {
+        try {
+            BufferedImage img = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("tiles/MenuPhoto.png"))).getSubimage(0, 80, 714, 394);
+            graphics2D.drawImage(img, 0, 0, 766, 576, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //graphics2D.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
 
         graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD, 76F));
         String text = "Spaceship Invaders";
         int x = getXforCenteredText(text);
-        int y =gamePanel.tileSize*3;
+        int y = gamePanel.tileSize * 3;
 
         //SHADOW
         graphics2D.setColor(Color.BLACK);
-        graphics2D.drawString(text, x+5, y+5);
+        graphics2D.drawString(text, x + 5, y + 5);
 
         //MAIN COLOR
         graphics2D.setColor(Color.white);
         graphics2D.drawString(text, x, y);
 
         //JACOB IMAGE
-        x = gamePanel.screenWidth/2 - gamePanel.tileSize;
-        y += gamePanel.tileSize*2;
-        graphics2D.drawImage(gamePanel.player.idle[0], x, y, gamePanel.tileSize*2, gamePanel.tileSize*2, null);
+        x = gamePanel.screenWidth / 2 - gamePanel.tileSize;
+        y += gamePanel.tileSize * 2;
+        graphics2D.drawImage(gamePanel.player.idle[0], x - gamePanel.tileSize * 2, y - gamePanel.tileSize * 3, gamePanel.tileSize * 6, gamePanel.tileSize * 6, null);
 
         //MENU
         graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD, 48F));
 
+        if (hasEntered == true)
+        {
+            text = "RESUME";
+            x = getXforCenteredText(text);
+            y += gamePanel.tileSize * 3;
+            graphics2D.drawString(text, x, y);
+            if (commandNumber == -1)
+            {
+                graphics2D.drawString(">", x - gamePanel.tileSize, y);
+            }
+        }
+
         text = "NEW GAME";
         x = getXforCenteredText(text);
-        y += gamePanel.tileSize*4;
+        if (hasEntered)
+        {
+            y += gamePanel.tileSize;
+        }
+        else
+        {
+            y+= gamePanel.tileSize*4;
+        }
         graphics2D.drawString(text, x, y);
         if (commandNumber == 0)
         {
@@ -203,7 +230,7 @@ public class UI
         String text = "PAUSED";
         int x = getXforCenteredText(text);
 
-        int y = gamePanel.screenHeight;
+        int y = gamePanel.screenHeight/2 + gamePanel.tileSize;
 
         graphics2D.drawString(text, x, y);
     }

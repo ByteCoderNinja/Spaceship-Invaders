@@ -10,30 +10,39 @@ import java.awt.image.BufferedImage;
 public class Entity
 {
     GamePanel gamePanel;
-    public int worldX, worldY;
-    public int speed;
     private int left_right = 0;
-
     public BufferedImage[] idle, walk, hurt, dead, attack, fire;
-    public String direction = "walk_down";
-
-    public int spriteCounter = 0;
-    public int spriteNum = 1;
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
+    public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
     public int solidAreaDefaultX, solidAreaDefaultY;
-    public boolean collisionOn = false;
-    public int actionLockCounter = 0;
-    String[] dialogues = new String[20];
-    int dialogueIndex = 0;
     public BufferedImage image, image2, image3;
-    public String name;
     public UtilityTool uTool = new UtilityTool();
     public boolean collision = false;
+    String[] dialogues = new String[20];
 
+    //STATE
+    public int worldX, worldY;
+    public String direction = "walk_down";
+    public int spriteNum = 1;
+    int dialogueIndex = 0;
+    public boolean collisionOn = false;
+    public boolean invincible = false;
+    boolean attacking = false;
+
+    //COUNTER
+    public int spriteCounter = 0;
+    public int actionLockCounter = 0;
+    public int invincibleCounter = 0;
 
     //CHARACTER STATUS
     public int maxLife;
     public int life;
+    public int maxMana;
+    public int mana;
+    public int speed;
+    public int type; //// 0 = player, 1 = npc, 2 = enemy
+    public String name;
+    public Bullet bullet;
 
     public Entity(GamePanel gamePanel)
     {
@@ -56,6 +65,19 @@ public class Entity
 
         collisionOn = false;
         gamePanel.collisionChecker.checkTile(this);
+        gamePanel.collisionChecker.checkObject(this, false);
+        gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
+        gamePanel.collisionChecker.checkEntity(this, gamePanel.marine_troop);
+        boolean contactPlayer = gamePanel.collisionChecker.checkPlayer(this);
+
+        if (this.type == 2 && contactPlayer == true)
+        {
+            if (gamePanel.player.invincible == false)
+            {
+                gamePanel.player.life -= 1;
+                gamePanel.player.invincible = true;
+            }
+        }
 
         if (collisionOn == false)
         {
@@ -98,12 +120,6 @@ public class Entity
         int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
 
-        if (worldX + gamePanel.tileSize > gamePanel.player.worldX - gamePanel.player.screenX &&
-                worldX - gamePanel.tileSize < gamePanel.player.worldX + gamePanel.player.screenX &&
-                worldY + gamePanel.tileSize > gamePanel.player.worldY - gamePanel.player.screenY &&
-                worldY - gamePanel.tileSize < gamePanel.player.worldY + gamePanel.player.screenY)
-        {
-
             int imageSizeX = gamePanel.tileSize;
 
             switch (direction)
@@ -142,8 +158,14 @@ public class Entity
                     break;
             }
 
-            graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
-        }
+            if (name == "Marine Troop")
+            {
+                graphics2D.drawImage(image, screenX, screenY, 64*gamePanel.scale, 64*gamePanel.scale, null);
+            }
+            else
+            {
+                graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+            }
     }
 
     public static BufferedImage mirrorImage(BufferedImage originalImage)

@@ -7,7 +7,7 @@ public class KeyHandler implements KeyListener
 {
     GamePanel gamePanel;
 
-    public boolean upPressed, downPressed, leftPressed, rightPressed, attackSpace, fireF;
+    public boolean upPressed, downPressed, leftPressed, rightPressed, attackSpace;
 
     boolean checkDrawTime = false;
 
@@ -30,9 +30,19 @@ public class KeyHandler implements KeyListener
             if (code == KeyEvent.VK_UP)
             {
                 --gamePanel.ui.commandNumber;
-                if (gamePanel.ui.commandNumber < 0)
+                if (UI.hasEntered)
                 {
-                    gamePanel.ui.commandNumber = 2;
+                    if (gamePanel.ui.commandNumber < -1)
+                    {
+                        gamePanel.ui.commandNumber = 2;
+                    }
+                }
+                else
+                {
+                    if (gamePanel.ui.commandNumber < 0)
+                    {
+                        gamePanel.ui.commandNumber = 2;
+                    }
                 }
             }
             if (code == KeyEvent.VK_DOWN)
@@ -40,13 +50,22 @@ public class KeyHandler implements KeyListener
                 ++gamePanel.ui.commandNumber;
                 if (gamePanel.ui.commandNumber > 2)
                 {
-                    gamePanel.ui.commandNumber = 0;
+                    gamePanel.ui.commandNumber = (UI.hasEntered) ? -1 : 0;
                 }
             }
             if (code == KeyEvent.VK_ENTER)
             {
+                if (gamePanel.ui.commandNumber == -1)
+                {
+                    gamePanel.stopMusic();
+                    gamePanel.gameState = gamePanel.playState;
+                    gamePanel.playMusic(0);
+                }
                 if (gamePanel.ui.commandNumber == 0)
                 {
+                    UI.hasEntered = true;
+                    gamePanel.ui.commandNumber = -1;
+                    gamePanel.stopMusic();
                     gamePanel.gameState = gamePanel.playState;
                     gamePanel.playMusic(0);
                 }
@@ -82,10 +101,13 @@ public class KeyHandler implements KeyListener
                     attackSpace = true;
                     break;
                 case KeyEvent.VK_ESCAPE:
-                    gamePanel.gameState = gamePanel.pauseState;
+
+                    gamePanel.stopMusic();
+                    gamePanel.playMusic(4);
+                    gamePanel.gameState = gamePanel.titleState;
                     break;
-                case KeyEvent.VK_F:
-                    fireF = true;
+                case KeyEvent.VK_P:
+                    gamePanel.gameState = gamePanel.pauseState;
                     break;
                 case KeyEvent.VK_T:
                     checkDrawTime = (checkDrawTime == false) ? true : false;
@@ -94,7 +116,7 @@ public class KeyHandler implements KeyListener
         //PAUSE STATE
         else if (gamePanel.gameState == gamePanel.pauseState)
         {
-            if (code == KeyEvent.VK_ESCAPE)
+            if (code == KeyEvent.VK_P)
             {
                 gamePanel.gameState = gamePanel.playState;
             }
@@ -128,7 +150,6 @@ public class KeyHandler implements KeyListener
                 break;
             case KeyEvent.VK_ESCAPE : attackSpace = false;
                 break;
-            case KeyEvent.VK_F : fireF = false;
         }
     }
 }

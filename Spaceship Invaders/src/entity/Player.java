@@ -2,6 +2,7 @@ package entity;
 
 import main.GamePanel;
 import main.KeyHandler;
+import object.OBJ_Bullet;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -17,6 +18,8 @@ public class Player extends Entity
 
     public final int screenX;
     public final int screenY;
+    public int width;
+    public int height;
 
 
 
@@ -25,10 +28,13 @@ public class Player extends Entity
         super(gamePanel);
         this.keyHandler = keyHandler;
 
-        screenX = (gamePanel.screenWidth / 2) - (gamePanel.tileSize / 2);
-        screenY = (gamePanel.screenHeight / 2) - (gamePanel.tileSize / 2);
+        width = 64;
+        height = 64;
 
-        solidArea = new Rectangle(0, 0, gamePanel.tileSize - 2, gamePanel.tileSize - 2);
+        screenX = (gamePanel.screenWidth / 2) - (width* gamePanel.scale / 2);
+        screenY = (gamePanel.screenHeight / 2) - (height* gamePanel.scale / 2);
+
+        solidArea = new Rectangle(25*gamePanel.scale, 35*gamePanel.scale, gamePanel.scale*12, gamePanel.scale*15);
 
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
@@ -54,6 +60,7 @@ public class Player extends Entity
         worldY = gamePanel.tileSize*7;
         speed = 4;
         direction = "idle";
+        bullet = new OBJ_Bullet(gamePanel);
 
         //PLAYER STATUS
         maxLife = 6;
@@ -65,13 +72,11 @@ public class Player extends Entity
     {
         try
         {
-            BufferedImage img = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/predatormask_finalizat.png"));
-            idle = cutImage(img,0,0, new int[]{230, 230, 230}, new int[]{396, 404, 413});
-            walk = cutImage(img, 0, 816, new int[]{225, 225, 223, 237, 238, 237}, new int[]{400, 403, 405, 390, 393, 393});
-            hurt = cutImage(img, 0, 1630, new int[]{227, 229, 235, 238}, new int[]{395, 390, 387, 383});
-            dead = cutImage(img, 0, 2024, new int[]{336, 379, 353, 374, 368}, new int[]{356, 318, 254, 231, 239});
-            attack = cutImage(img, 0, 2383, new int[]{234, 292, 443, 541}, new int[]{397, 397, 397, 397});
-            fire = cutImage(img, 0, 2781, new int[]{238, 268, 228, 240, 305, 385, 405, 485, 504, 518}, new int[]{392, 389, 394, 400, 404, 405, 399, 399, 399, 399});
+            BufferedImage img = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/marine.png"));
+            idle = cutImage(img,0,0, new int[]{64, 64, 64, 64, 64}, new int[]{64, 64, 64, 64, 64});
+            walk = cutImage(img, 0, 64, new int[]{64, 64, 64, 64, 64, 64, 64, 64}, new int[]{64, 64, 64, 64, 64, 64, 64, 64});
+            dead = cutImage(img, 0, 128, new int[]{64, 64, 64, 64, 64, 64, 64, 64}, new int[]{64, 64, 64, 64, 64, 64, 64, 64});
+            attack = cutImage(img, 0, 192, new int[]{64, 64}, new int[]{64, 64});
         }
         catch(IOException e)
         {
@@ -136,10 +141,6 @@ public class Player extends Entity
         {
             direction = "attack";
         }
-        else if (keyHandler.fireF)
-        {
-            direction = "fire";
-        }
         else
         {
             direction = "idle";
@@ -160,8 +161,13 @@ public class Player extends Entity
         int npcIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
         interactNPC(npcIndex);
 
+        //CHECK ENEMY COLLISION
+        int enemyIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.marine_troop);
+        contactEnemy(enemyIndex);
+
         if (collisionOn == false)
         {
+
             switch (direction)
             {
                 case "walk_up": worldY -= speed;
@@ -187,11 +193,38 @@ public class Player extends Entity
                 case "attack":
                     spriteNum = (spriteNum < attack.length - 1) ? ++spriteNum : 0;
                     break;
-                case "fire":
-                    spriteNum = (spriteNum < fire.length - 1) ? ++spriteNum : 0;
-                    break;
                 default:
-                    spriteNum = (spriteNum < walk.length - 1) ? ++spriteNum : 0;
+                    spriteNum = (spriteNum < walk.length - 1) ? ++spriteNum : 0; if (spriteNum%2==0) gamePanel.playSE(1);
+            }
+        }
+
+        if (gamePanel.keyH.attackSpace == true)
+        {
+            bullet.set(worldX, worldY, direction, true, this);
+
+            gamePanel.bullets.add(bullet);
+        }
+
+        if (invincible == true)
+        {
+            ++invincibleCounter;
+            if (invincibleCounter > 60)
+            {
+                invincible = false;
+                invincibleCounter = 0;
+            }
+        }
+    }
+
+    private void contactEnemy(int enemyIndex)
+    {
+        if (enemyIndex != 1000)
+        {
+            if (invincible == false)
+            {
+                life -= 1;
+                invincible = true;
+                gamePanel.playSE(3);
             }
         }
     }
@@ -214,12 +247,9 @@ public class Player extends Entity
         }
     }
 
-
-    public void draw(Graphics graphics2)
+    @Override
+    public void draw(Graphics2D graphics2D)
     {
-        BufferedImage image = null;
-        int imageSizeX = gamePanel.tileSize;
-
         switch (direction)
         {
             case "walk_left":
@@ -233,25 +263,23 @@ public class Player extends Entity
                 image = (left_right == 0) ? idle[spriteNum] : mirrorImage(idle[spriteNum]);
                 break;
             case "attack":
-                image = (left_right == 0) ? attack[spriteNum] : mirrorImage(attack[spriteNum]);
-                if (spriteNum >= 2)
+                if (spriteNum < 2)
                 {
-                    imageSizeX = gamePanel.tileSize * 2;
-                }
-                break;
-            case "fire":
-                image = (left_right == 0) ? fire[spriteNum] : mirrorImage(fire[spriteNum]);
-                if (spriteNum >= 5)
-                {
-                    imageSizeX = gamePanel.tileSize * 2;
+                    image = (left_right == 0) ? attack[spriteNum] : mirrorImage(attack[spriteNum]);
                 }
                 break;
             default:
                 image = (left_right == 0) ? walk[spriteNum] : mirrorImage(walk[spriteNum]);
         }
 
-        graphics2.drawImage(image, screenX, screenY, imageSizeX, gamePanel.tileSize, null);
+        if (invincible == true)
+        {
+            graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+        }
+
+        graphics2D.drawImage(image, screenX, screenY, width*gamePanel.scale, height*gamePanel.scale, null);
+
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+
     }
-
-
 }

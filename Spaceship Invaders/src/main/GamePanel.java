@@ -14,7 +14,7 @@ public class GamePanel extends JPanel implements Runnable
 {
     // SCREEN SETTINGS
     static final int originalTileSize = 16;
-    public static final int scale = 3;
+    public final int scale = 3;
 
     public final int tileSize = originalTileSize * scale;
     public final int maxScreenColumns = 16;
@@ -31,7 +31,7 @@ public class GamePanel extends JPanel implements Runnable
 
     //SYSTEM
     TileManager tileM = new TileManager(this);
-    KeyHandler keyH = new KeyHandler(this);
+    public KeyHandler keyH = new KeyHandler(this);
     Sound music = new Sound();
     Sound se = new Sound();
     public CollisionChecker collisionChecker = new CollisionChecker(this);
@@ -44,6 +44,8 @@ public class GamePanel extends JPanel implements Runnable
     public Player player = Player.getInstance(this, keyH);
     public Entity[] obj = new Entity[10];
     public Entity[] npc = new Entity[10];
+    public Entity[] marine_troop = new Entity[20];
+    public ArrayList<Entity> bullets = new ArrayList<>();
     ArrayList<Entity> entities = new ArrayList<Entity>();
 
     //GAME STATE
@@ -68,7 +70,8 @@ public class GamePanel extends JPanel implements Runnable
     {
         assetSetter.setObject();
         assetSetter.setNPC();
-        playMusic(0);
+        assetSetter.setMarineTroop();
+        playMusic(4);
         gameState = titleState;
     }
 
@@ -117,6 +120,22 @@ public class GamePanel extends JPanel implements Runnable
                 if (npc[i] != null)
                 {
                     npc[i].update();
+                }
+            }
+            //ENEMY
+            for (int i = 0; i < marine_troop.length; ++i)
+            {
+                if (marine_troop[i] != null)
+                {
+                    marine_troop[i].update();
+                }
+            }
+
+            for (int i = 0; i < bullets.size(); ++i)
+            {
+                if (bullets.get(i) != null)
+                {
+                    bullets.get(i).update();
                 }
             }
         }
@@ -168,6 +187,14 @@ public class GamePanel extends JPanel implements Runnable
                 }
             }
 
+            for (int i = 0; i < marine_troop.length; ++i)
+            {
+                if (marine_troop[i] != null)
+                {
+                    entities.add(marine_troop[i]);
+                }
+            }
+
             //SORT
             Collections.sort(entities, new Comparator<Entity>()
             {
@@ -192,10 +219,7 @@ public class GamePanel extends JPanel implements Runnable
             }
 
             //EMPTY ENTITY LIST
-            for (int i = 0; i < entities.size(); ++i)
-            {
-                entities.remove(i);
-            }
+            entities.clear();
 
             //UI
             ui.draw(graphics2d);
