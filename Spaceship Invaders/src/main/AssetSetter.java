@@ -1,6 +1,6 @@
 package main;
 
-import enemy.marine_troop;
+import enemy.space_troop;
 import entity.NPC_Alien;
 import object.OBJ_AutoDestroyButton;
 import object.OBJ_Door;
@@ -28,13 +28,13 @@ public class AssetSetter
 
     public void setMarineTroop()
     {
-        gamePanel.marine_troop[0] = new marine_troop(gamePanel);
-        gamePanel.marine_troop[0].worldX = gamePanel.tileSize*8;
-        gamePanel.marine_troop[0].worldY = gamePanel.tileSize*13;
+        gamePanel.space_troop[0] = new space_troop(gamePanel);
+        gamePanel.space_troop[0].worldX = gamePanel.tileSize*8;
+        gamePanel.space_troop[0].worldY = gamePanel.tileSize*13;
 
-        gamePanel.marine_troop[1] = new marine_troop(gamePanel);
-        gamePanel.marine_troop[1].worldX = gamePanel.tileSize*8;
-        gamePanel.marine_troop[1].worldY = gamePanel.tileSize*14;
+        gamePanel.space_troop[1] = new space_troop(gamePanel);
+        gamePanel.space_troop[1].worldX = gamePanel.tileSize*8;
+        gamePanel.space_troop[1].worldY = gamePanel.tileSize*14;
     }
 
 }

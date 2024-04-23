@@ -28,11 +28,16 @@ public class Entity
     public boolean collisionOn = false;
     public boolean invincible = false;
     boolean attacking = false;
+    public boolean alive = true;
+    public boolean dying = false;
+    boolean hpBarOn = false;
 
     //COUNTER
     public int spriteCounter = 0;
     public int actionLockCounter = 0;
     public int invincibleCounter = 0;
+    int dyingCounter = 0;
+    int hpBarCounter = 0;
 
     //CHARACTER STATUS
     public int maxLife;
@@ -50,6 +55,9 @@ public class Entity
     }
 
     public void setAction() {}
+
+    public void damageReaction() {}
+
     public void speak()
     {
         if (dialogues[dialogueIndex] == null)
@@ -59,6 +67,8 @@ public class Entity
         gamePanel.ui.currentDialogue = dialogues[dialogueIndex];
         ++dialogueIndex;
     }
+
+
     public void update()
     {
         setAction();
@@ -67,7 +77,7 @@ public class Entity
         gamePanel.collisionChecker.checkTile(this);
         gamePanel.collisionChecker.checkObject(this, false);
         gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
-        gamePanel.collisionChecker.checkEntity(this, gamePanel.marine_troop);
+        gamePanel.collisionChecker.checkEntity(this, gamePanel.space_troop);
         boolean contactPlayer = gamePanel.collisionChecker.checkPlayer(this);
 
         if (this.type == 2 && contactPlayer == true)
@@ -113,6 +123,16 @@ public class Entity
                     spriteNum = (spriteNum < walk.length - 1) ? ++spriteNum : 0;
             }
         }
+
+        if (invincible == true)
+        {
+            ++invincibleCounter;
+            if (invincibleCounter > 40)
+            {
+                invincible = false;
+                invincibleCounter = 0;
+            }
+        }
     }
 
     public void draw(Graphics2D graphics2D)
@@ -126,9 +146,10 @@ public class Entity
             {
                 case "walk_down":
                 case "walk_up":
-                    if (name != "Door") {
+                    if (name != "Door")
+                    {
                         image = (left_right == 0) ? walk[spriteNum] : mirrorImage(walk[spriteNum]);
-                    } else {}
+                    }
                     break;
                 case "walk_left":
                     image = mirrorImage(walk[spriteNum]);
@@ -148,25 +169,83 @@ public class Entity
                     {
                         imageSizeX = gamePanel.tileSize * 2;
                     }
-                    break;
-                case "fire":
-                    image = (left_right == 0) ? fire[spriteNum] : mirrorImage(fire[spriteNum]);
-                    if (spriteNum >= 5)
-                    {
-                        imageSizeX = gamePanel.tileSize * 2;
-                    }
+
                     break;
             }
 
-            if (name == "Marine Troop")
+        //HPBar
+        if (type == 2 && hpBarOn == true)
+        {
+            double oneScale = (double)gamePanel.tileSize/maxLife;
+            double hpBarValue = oneScale*life;
+
+            graphics2D.setColor(new Color(0x201212));
+            graphics2D.fillRect(screenX + 69, screenY + 74, gamePanel.tileSize + 2, 12);
+
+            graphics2D.setColor(new Color(215, 0, 0, 255));
+            graphics2D.fillRect(screenX + 70, screenY + 75, (int)hpBarValue, 10);
+
+            ++hpBarCounter;
+
+            if (hpBarCounter > 600)
+            {
+                hpBarCounter = 0;
+                hpBarOn = false;
+            }
+        }
+
+
+            if (invincible == true)
+            {
+                hpBarOn = true;
+                hpBarCounter = 0;
+                changeAlpha(graphics2D, 0.4F);
+            }
+            if (dying == true)
+            {
+                dyingAnimation(graphics2D);
+            }
+
+            if (name == "Space Troop")
             {
                 graphics2D.drawImage(image, screenX, screenY, 64*gamePanel.scale, 64*gamePanel.scale, null);
+                changeAlpha(graphics2D, 1F);
             }
             else
             {
                 graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
             }
+
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
     }
+
+    private void dyingAnimation(Graphics2D graphics2D)
+    {
+        ++dyingCounter;
+
+        int i = 5;
+
+        if (dyingCounter <= i) {changeAlpha(graphics2D, 0f);}
+        if (dyingCounter > i && dyingCounter <= i*2) {changeAlpha(graphics2D, 1f);}
+        if (dyingCounter > i*2 && dyingCounter <= i*3) {changeAlpha(graphics2D, 0f);}
+        if (dyingCounter > i*3 && dyingCounter <= i*4) {changeAlpha(graphics2D, 1f);}
+        if (dyingCounter > i*4 && dyingCounter <= i*5) {changeAlpha(graphics2D, 0f);}
+        if (dyingCounter > i*5 && dyingCounter <= i*6) {changeAlpha(graphics2D, 1f);}
+        if (dyingCounter > i*6 && dyingCounter <= i*7) {changeAlpha(graphics2D, 0f);}
+        if (dyingCounter > i*7 && dyingCounter <= i*8) {changeAlpha(graphics2D, 1f);}
+        if (dyingCounter > i*8)
+        {
+            dying = false;
+            alive = false;
+        }
+    }
+
+
+    public void changeAlpha(Graphics2D graphics2D, float alphaValue)
+    {
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alphaValue));
+    }
+
 
     public static BufferedImage mirrorImage(BufferedImage originalImage)
     {

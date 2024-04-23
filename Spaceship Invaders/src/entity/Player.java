@@ -22,7 +22,6 @@ public class Player extends Entity
     public int height;
 
 
-
     private Player(GamePanel gamePanel, KeyHandler keyHandler)
     {
         super(gamePanel);
@@ -39,6 +38,8 @@ public class Player extends Entity
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
+        attackArea.width = 50;
+        attackArea.height = 72;
         setDefaultValues();
         getPlayerImage();
     }
@@ -85,26 +86,6 @@ public class Player extends Entity
     }
 
 
-    public static BufferedImage mirrorImage(BufferedImage originalImage)
-    {
-        int width = originalImage.getWidth();
-        int height = originalImage.getHeight();
-
-        BufferedImage mirroredImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-        AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
-        tx.translate(-width, 0);
-
-        Graphics2D g2d = mirroredImage.createGraphics();
-        g2d.setTransform(tx);
-
-        g2d.drawImage(originalImage, 0, 0, null);
-        g2d.dispose();
-
-        return mirroredImage;
-    }
-
-
     public BufferedImage[] cutImage(BufferedImage img, int x, int y, int[] width, int[] height)
     {
         BufferedImage[] bufferedImages = new BufferedImage[width.length];
@@ -140,6 +121,7 @@ public class Player extends Entity
         else if (keyHandler.attackSpace)
         {
             direction = "attack";
+            attacking();
         }
         else
         {
@@ -162,7 +144,7 @@ public class Player extends Entity
         interactNPC(npcIndex);
 
         //CHECK ENEMY COLLISION
-        int enemyIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.marine_troop);
+        int enemyIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.space_troop);
         contactEnemy(enemyIndex);
 
         if (collisionOn == false)
@@ -216,6 +198,73 @@ public class Player extends Entity
         }
     }
 
+    public void attacking()
+    {
+        ++spriteCounter;
+
+        if (spriteCounter <= 5)
+        {
+            spriteNum = 1;
+        }
+        if (spriteCounter > 5 && spriteCounter <= 25)
+        {
+            spriteNum = 2;
+
+            int currentWorldX = worldX;
+            int currentWorldY = worldY;
+            int solidAreaWidth = solidArea.width;
+            int solidAreaHeight = solidArea.height;
+
+            if (direction == "attack")
+            {
+                if (left_right == 1)
+                {
+                    worldX -= attackArea.width;
+                }
+                else
+                {
+                    worldX += attackArea.width;
+                }
+            }
+
+            solidArea.width = attackArea.width;
+            solidArea.height = attackArea.height;
+
+            int enemyIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.space_troop);
+            damageEnemy(enemyIndex);
+
+            worldX = currentWorldX;
+            worldY = currentWorldY;
+            solidArea.width = solidAreaWidth;
+            solidArea.height = solidAreaHeight;
+        }
+        if (spriteCounter > 25)
+        {
+            spriteNum = 1;
+            spriteCounter = 0;
+            attacking = false;
+        }
+    }
+
+    private void damageEnemy(int enemyIndex)
+    {
+        if (enemyIndex != 1000)
+        {
+            if (gamePanel.space_troop[enemyIndex].invincible == false)
+            {
+                gamePanel.space_troop[enemyIndex].life -= 1;
+                gamePanel.space_troop[enemyIndex].invincible = true;
+                gamePanel.space_troop[enemyIndex].damageReaction();
+
+                if (gamePanel.space_troop[enemyIndex].life <= 0)
+                {
+                    gamePanel.space_troop[enemyIndex].dying = true;
+                }
+                gamePanel.playSE(3);
+            }
+        }
+    }
+
     private void contactEnemy(int enemyIndex)
     {
         if (enemyIndex != 1000)
@@ -235,6 +284,10 @@ public class Player extends Entity
         {
             gamePanel.gameState = gamePanel.dialogueState;
             gamePanel.npc[x].speak();
+        }
+        if (gamePanel.keyH.attackSpace == true)
+        {
+            attacking = true;
         }
     }
 

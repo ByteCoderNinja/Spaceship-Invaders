@@ -1,5 +1,6 @@
 package main;
 
+import entity.Bullet;
 import entity.Entity;
 import entity.Player;
 import tile.TileManager;
@@ -44,9 +45,9 @@ public class GamePanel extends JPanel implements Runnable
     public Player player = Player.getInstance(this, keyH);
     public Entity[] obj = new Entity[10];
     public Entity[] npc = new Entity[10];
-    public Entity[] marine_troop = new Entity[20];
+    public Entity[] space_troop = new Entity[20];
     public ArrayList<Entity> bullets = new ArrayList<>();
-    ArrayList<Entity> entities = new ArrayList<Entity>();
+    ArrayList<Entity> entities = new ArrayList<>();
 
     //GAME STATE
     public int gameState;
@@ -123,11 +124,18 @@ public class GamePanel extends JPanel implements Runnable
                 }
             }
             //ENEMY
-            for (int i = 0; i < marine_troop.length; ++i)
+            for (int i = 0; i < space_troop.length; ++i)
             {
-                if (marine_troop[i] != null)
+                if (space_troop[i] != null)
                 {
-                    marine_troop[i].update();
+                    if (space_troop[i].alive == true && space_troop[i].dying == false)
+                    {
+                        space_troop[i].update();
+                    }
+                    if (space_troop[i].alive == false)
+                    {
+                        space_troop[i] = null;
+                    }
                 }
             }
 
@@ -145,6 +153,7 @@ public class GamePanel extends JPanel implements Runnable
             //nothing
         }
     }
+
 
     public void paintComponent(Graphics graphics1)
     {
@@ -187,12 +196,17 @@ public class GamePanel extends JPanel implements Runnable
                 }
             }
 
-            for (int i = 0; i < marine_troop.length; ++i)
+            for (int i = 0; i < space_troop.length; ++i)
             {
-                if (marine_troop[i] != null)
+                if (space_troop[i] != null)
                 {
-                    entities.add(marine_troop[i]);
+                    entities.add(space_troop[i]);
                 }
+            }
+
+            for (int i = 0; i < bullets.size(); ++i)
+            {
+                bullets.get(i).draw(graphics2d);
             }
 
             //SORT

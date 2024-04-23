@@ -148,8 +148,6 @@ public class KeyHandler implements KeyListener
                 break;
             case KeyEvent.VK_SPACE : attackSpace = false;
                 break;
-            case KeyEvent.VK_ESCAPE : attackSpace = false;
-                break;
         }
     }
 }

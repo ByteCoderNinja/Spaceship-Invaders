@@ -2,9 +2,12 @@ package entity;
 
 import main.GamePanel;
 
+import java.awt.*;
+
 public class Bullet extends Entity
 {
     Entity user;
+    int screenX, screenY;
 
     public Bullet(GamePanel gamePanel)
     {
@@ -19,16 +22,17 @@ public class Bullet extends Entity
         //this.alive = alive;
         this.user = user;
         this.life = this.maxLife;
+
+        screenX = gamePanel.player.worldX + 20;
+        screenY = gamePanel.player.worldY - 35;
     }
+
 
     public void update()
     {
-        switch (direction)
+        if (direction == "attack")
         {
-            case "walk_up": worldY -= speed; break;
-            case "walk_down": worldY += speed; break;
-            case "walk_left": worldX -= speed; break;
-            case "walk_right": worldX += speed; break;
+            screenX += speed;
         }
 
         --life;
@@ -36,19 +40,20 @@ public class Bullet extends Entity
         {
             //alive = 0;
         }
+    }
 
-        ++spriteCounter;
-        if (spriteCounter > 12)
+    @Override
+    public void draw(Graphics2D graphics2D)
+    {
+        /*switch (direction)
         {
-            if (spriteNum == 1)
-            {
-                spriteNum = 2;
-            }
-            else if (spriteNum == 2)
-            {
-                spriteNum = 1;
-            }
-            spriteCounter = 0;
-        }
+            case "walk_right":
+                screenX = gamePanel.player.worldX;
+                screenY = gamePanel.player.worldY;
+            case "walk_left":
+                screenX = gamePanel.player.worldX;
+                screenY = gamePanel.player.worldY;
+        }*/
+        graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
     }
 }
