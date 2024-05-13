@@ -43,15 +43,16 @@ public class GamePanel extends JPanel implements Runnable
 
     //ENTITY AND OBJECT
     public Player player = Player.getInstance(this, keyH);
-    public Entity[] obj = new Entity[10];
+    public Entity[] obj = new Entity[12];
     public Entity[] npc = new Entity[10];
     public Entity[] space_troop = new Entity[20];
     public ArrayList<Entity> bullets = new ArrayList<>();
     ArrayList<Entity> entities = new ArrayList<>();
 
     //GAME STATE
-    public int gameState;
     public final int titleState = 0;
+    public int gameState = titleState;
+
     public final int playState = 1;
     public final int pauseState = 2;
     public final int dialogueState = 3;
@@ -64,6 +65,7 @@ public class GamePanel extends JPanel implements Runnable
         this.addKeyListener(keyH);
         this.setFocusable(true);
         this.requestFocus();
+        this.playMusic(4);
     }
 
 
@@ -72,8 +74,6 @@ public class GamePanel extends JPanel implements Runnable
         assetSetter.setObject();
         assetSetter.setNPC();
         assetSetter.setMarineTroop();
-        playMusic(4);
-        gameState = titleState;
     }
 
 
@@ -144,6 +144,14 @@ public class GamePanel extends JPanel implements Runnable
                 if (bullets.get(i) != null)
                 {
                     bullets.get(i).update();
+                    /*if (bullets.get(i).collisionOn == false)
+                    {
+                        bullets.get(i).update();
+                    }
+                    if (bullets.get(i).collisionOn == true)
+                    {
+                        bullets.remove(i);
+                    }*/
                 }
             }
         }
@@ -206,7 +214,10 @@ public class GamePanel extends JPanel implements Runnable
 
             for (int i = 0; i < bullets.size(); ++i)
             {
-                bullets.get(i).draw(graphics2d);
+                if (bullets.get(i) != null)
+                {
+                    entities.add(bullets.get(i));
+                }
             }
 
             //SORT
@@ -243,9 +254,18 @@ public class GamePanel extends JPanel implements Runnable
         {
             long drawEnd = System.nanoTime();
             long passed = drawEnd - drawStart;
+
+            graphics2d.setFont(new Font("Arial", Font.PLAIN, 20));
             graphics2d.setColor(Color.white);
-            graphics2d.drawString("Draw Time: " + passed, 10, 400);
-            System.out.println("Draw Time: " + passed);
+            int x = 10;
+            int y = 400;
+            int lineHeight = 20;
+
+            graphics2d.drawString("WorldX" + player.worldX, x, y); y += lineHeight;
+            graphics2d.drawString("WorldY" + player.worldY, x, y); y += lineHeight;
+            graphics2d.drawString("Col" + (player.worldX + player.solidArea.x)/tileSize, x, y); y += lineHeight;
+            graphics2d.drawString("Row" + (player.worldX + player.solidArea.y)/tileSize, x, y); y += lineHeight;
+            graphics2d.drawString("Draw Time: " + passed, x, y);
         }
 
         graphics2d.dispose();

@@ -16,7 +16,8 @@ public class OBJ_key extends Entity
         name = "Key";
         try
         {
-            image = ImageIO.read(getClass().getClassLoader().getResourceAsStream("tiles/sprite-sheet.png")).getSubimage(1260, 10, 868, 983);
+            image = ImageIO.read(getClass().getClassLoader().getResourceAsStream("tiles/sprite-sheet.png")).getSubimage(1260, 10, 863, 980);
+            image = uTool.scaleImage(image, gamePanel.tileSize, gamePanel.tileSize);
         }
         catch (IOException e)
         {

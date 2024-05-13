@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 public class Entity
 {
     GamePanel gamePanel;
-    private int left_right = 0;
+    public int left_right = 0;
     public BufferedImage[] idle, walk, hurt, dead, attack, fire;
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
     public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
@@ -40,10 +40,9 @@ public class Entity
     int hpBarCounter = 0;
 
     //CHARACTER STATUS
+    public int attackPower;
     public int maxLife;
     public int life;
-    public int maxMana;
-    public int mana;
     public int speed;
     public int type; //// 0 = player, 1 = npc, 2 = enemy
     public String name;
@@ -116,9 +115,9 @@ public class Entity
                 case "attack":
                     spriteNum = (spriteNum < attack.length - 1) ? ++spriteNum : 0;
                     break;
-                case "fire":
+               /* case "fire":
                     spriteNum = (spriteNum < fire.length - 1) ? ++spriteNum : 0;
-                    break;
+                    break;*/
                 default:
                     spriteNum = (spriteNum < walk.length - 1) ? ++spriteNum : 0;
             }
@@ -140,13 +139,11 @@ public class Entity
         int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
         int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
 
-            int imageSizeX = gamePanel.tileSize;
-
             switch (direction)
             {
                 case "walk_down":
                 case "walk_up":
-                    if (name != "Door")
+                    if (name != "Door" && name != "Key")
                     {
                         image = (left_right == 0) ? walk[spriteNum] : mirrorImage(walk[spriteNum]);
                     }
@@ -164,12 +161,10 @@ public class Entity
                     image = (left_right == 0) ? idle[spriteNum] : mirrorImage(idle[spriteNum]);
                     break;
                 case "attack":
-                    image = (left_right == 0) ? attack[spriteNum] : mirrorImage(attack[spriteNum]);
-                    if (spriteNum >= 2)
+                    if (attack != null)
                     {
-                        imageSizeX = gamePanel.tileSize * 2;
+                        image = (left_right == 0) ? attack[spriteNum] : mirrorImage(attack[spriteNum]);
                     }
-
                     break;
             }
 

@@ -18,6 +18,7 @@ public class Player extends Entity
 
     public final int screenX;
     public final int screenY;
+    int hasKey = 0;
     public int width;
     public int height;
 
@@ -61,11 +62,11 @@ public class Player extends Entity
         worldY = gamePanel.tileSize*7;
         speed = 4;
         direction = "idle";
-        bullet = new OBJ_Bullet(gamePanel);
 
         //PLAYER STATUS
         maxLife = 6;
         life = maxLife;
+        bullet = new OBJ_Bullet(gamePanel);
     }
 
 
@@ -100,20 +101,20 @@ public class Player extends Entity
 
     public void update()
     {
-        if (keyHandler.upPressed)
+        if (keyHandler.upPressed && !keyHandler.attackSpace)
         {
             direction = "walk_up";
         }
-        else if (keyHandler.downPressed)
+        else if (keyHandler.downPressed && !keyHandler.attackSpace)
         {
             direction = "walk_down";
         }
-        else if (keyHandler.leftPressed)
+        else if (keyHandler.leftPressed && !keyHandler.attackSpace)
         {
             direction = "walk_left";
             left_right = 1;
         }
-        else if (keyHandler.rightPressed)
+        else if (keyHandler.rightPressed && !keyHandler.attackSpace)
         {
             direction = "walk_right";
             left_right = 0;
@@ -174,6 +175,9 @@ public class Player extends Entity
                     break;
                 case "attack":
                     spriteNum = (spriteNum < attack.length - 1) ? ++spriteNum : 0;
+                    bullet = new OBJ_Bullet(gamePanel);
+                    bullet.set(worldX + gamePanel.tileSize*2 + 15, worldY*2 + 6, direction, true, this);
+                    gamePanel.bullets.add(bullet);
                     break;
                 default:
                     spriteNum = (spriteNum < walk.length - 1) ? ++spriteNum : 0; if (spriteNum%2==0) gamePanel.playSE(1);
@@ -182,8 +186,17 @@ public class Player extends Entity
 
         if (gamePanel.keyH.attackSpace == true)
         {
-            bullet.set(worldX, worldY, direction, true, this);
+            bullet.set(worldX + gamePanel.tileSize*2 + 15, worldY + gamePanel.tileSize*2 + 6, direction, true, this);
 
+            gamePanel.bullets.add(bullet);
+        }
+
+        if (gamePanel.keyH.attackSpace == true && bullet.alive == false)
+        {
+            // SET DEFAULT COORDINATES, DIRECTIONS AND USER
+            bullet.set(worldX, worldY, direction, false, this);
+
+            // ADD IT TO THE LIST
             gamePanel.bullets.add(bullet);
         }
 
@@ -246,6 +259,45 @@ public class Player extends Entity
         }
     }
 
+    public void pickUpObject(int index)
+    {
+        if (index != 1000)
+        {
+            String objectName = gamePanel.obj[index].name;
+
+            switch (objectName)
+            {
+                case "Key":
+                    ++hasKey;
+                    gamePanel.obj[index] = null;
+                    break;
+                case "Door":
+                    if (hasKey > 0)
+                    {
+                        switch (index)
+                        {
+                            case 0:
+                            case 4: gamePanel.obj[index].worldX -= gamePanel.tileSize;
+                            gamePanel.obj[index + 1].worldX += gamePanel.tileSize;
+                            break;
+                            case 1:
+                            case 5: gamePanel.obj[index].worldX += gamePanel.tileSize;
+                            gamePanel.obj[index - 1].worldX -= gamePanel.tileSize;
+                            break;
+                            case 2: gamePanel.obj[index].worldY -= gamePanel.tileSize;
+                            gamePanel.obj[index + 1].worldY += gamePanel.tileSize;
+                            break;
+                            case 3: gamePanel.obj[index].worldY += gamePanel.tileSize;
+                            gamePanel.obj[index - 1].worldY -= gamePanel.tileSize;
+                            break;
+                        }
+                        --hasKey;
+                    }
+                    break;
+            }
+        }
+    }
+
     private void damageEnemy(int enemyIndex)
     {
         if (enemyIndex != 1000)
@@ -291,14 +343,6 @@ public class Player extends Entity
         }
     }
 
-
-    public void pickUpObject(int x)
-    {
-        if (x != 1000)
-        {
-
-        }
-    }
 
     @Override
     public void draw(Graphics2D graphics2D)

@@ -101,7 +101,6 @@ public class KeyHandler implements KeyListener
                     attackSpace = true;
                     break;
                 case KeyEvent.VK_ESCAPE:
-
                     gamePanel.stopMusic();
                     gamePanel.playMusic(4);
                     gamePanel.gameState = gamePanel.titleState;
@@ -113,6 +112,12 @@ public class KeyHandler implements KeyListener
                     checkDrawTime = (checkDrawTime == false) ? true : false;
             }
         }
+
+        if (code == KeyEvent.VK_R)
+        {
+            gamePanel.tileM.loadMap("maps/map02.txt");
+        }
+
         //PAUSE STATE
         else if (gamePanel.gameState == gamePanel.pauseState)
         {

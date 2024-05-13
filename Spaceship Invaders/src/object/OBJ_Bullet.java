@@ -20,8 +20,8 @@ public class OBJ_Bullet extends Bullet
         speed = 5;
         maxLife = 80;
         life = maxLife;
-        //attack = 2;
-        //alive = false;
+        attackPower = 2;
+        alive = false;
         getImage();
     }
 

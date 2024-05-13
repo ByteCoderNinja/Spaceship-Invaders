@@ -19,7 +19,7 @@ public class Bullet extends Entity
         this.worldX = worldX;
         this.worldY = worldY;
         this.direction = direction;
-        //this.alive = alive;
+        this.alive = alive;
         this.user = user;
         this.life = this.maxLife;
 
@@ -30,22 +30,41 @@ public class Bullet extends Entity
 
     public void update()
     {
-        if (direction == "attack")
+        switch (left_right)
         {
-            screenX += speed;
+            case 0: worldX += speed; break;
+            case 1: worldX -= speed; break;
+            /*case "walk_up": worldY -= speed; System.out.println("AAAAAA"); break;
+            case "walk_down": worldY += speed; System.out.println("AAAAAA"); break;
+            case "walk_left": worldX -= speed; System.out.println("AAAAAA"); break;
+            case "walk_right": worldX += speed; System.out.println("AAAAAA"); break;*/
         }
 
         --life;
         if (life <= 0)
         {
-            //alive = 0;
+            alive = false;
+        }
+
+        ++spriteCounter;
+        if (spriteCounter > 12)
+        {
+            if (spriteNum == 1)
+            {
+                spriteNum = 2;
+            }
+            else if (spriteNum == 2)
+            {
+                spriteNum = 1;
+            }
+            spriteCounter = 0;
         }
     }
 
-    @Override
+   /* @Override
     public void draw(Graphics2D graphics2D)
     {
-        /*switch (direction)
+        switch (direction)
         {
             case "walk_right":
                 screenX = gamePanel.player.worldX;
@@ -53,7 +72,7 @@ public class Bullet extends Entity
             case "walk_left":
                 screenX = gamePanel.player.worldX;
                 screenY = gamePanel.player.worldY;
-        }*/
+        }
         graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
-    }
+    }*/
 }

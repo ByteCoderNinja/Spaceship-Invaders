@@ -20,7 +20,7 @@ public class space_troop extends Entity
         type = 2;
         name = "Space Troop";
         speed = 1;
-        maxLife = 20;
+        maxLife = 6;
         life = maxLife;
 
         solidArea.x = 24*gamePanel.scale;
