@@ -34,7 +34,7 @@ public class Player extends Entity
         screenX = (gamePanel.screenWidth / 2) - (width* gamePanel.scale / 2);
         screenY = (gamePanel.screenHeight / 2) - (height* gamePanel.scale / 2);
 
-        solidArea = new Rectangle(25*gamePanel.scale, 35*gamePanel.scale, gamePanel.scale*12, gamePanel.scale*15);
+        solidArea = new Rectangle(27*gamePanel.scale, 35*gamePanel.scale, gamePanel.scale*10, gamePanel.scale*15);
 
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
@@ -298,7 +298,7 @@ public class Player extends Entity
         }
     }
 
-    private void damageEnemy(int enemyIndex)
+    public void damageEnemy(int enemyIndex)
     {
         if (enemyIndex != 1000)
         {
@@ -317,7 +317,7 @@ public class Player extends Entity
         }
     }
 
-    private void contactEnemy(int enemyIndex)
+    public void contactEnemy(int enemyIndex)
     {
         if (enemyIndex != 1000)
         {

@@ -30,14 +30,24 @@ public class Bullet extends Entity
 
     public void update()
     {
+        if (user == gamePanel.player)
+        {
+            int monsterIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.space_troop);
+            if (monsterIndex != 1000)
+            {
+                gamePanel.player.damageEnemy(monsterIndex);
+                alive = false;
+            }
+        }
+        if (user != gamePanel.player)
+        {
+
+        }
+
         switch (left_right)
         {
             case 0: worldX += speed; break;
             case 1: worldX -= speed; break;
-            /*case "walk_up": worldY -= speed; System.out.println("AAAAAA"); break;
-            case "walk_down": worldY += speed; System.out.println("AAAAAA"); break;
-            case "walk_left": worldX -= speed; System.out.println("AAAAAA"); break;
-            case "walk_right": worldX += speed; System.out.println("AAAAAA"); break;*/
         }
 
         --life;
