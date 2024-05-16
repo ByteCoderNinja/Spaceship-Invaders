@@ -9,9 +9,9 @@ import java.awt.image.BufferedImage;
 
 public class Entity
 {
-    GamePanel gamePanel;
+    public GamePanel gamePanel;
     public int left_right = 0;
-    public BufferedImage[] idle, walk, hurt, dead, attack, fire;
+    public BufferedImage[] idle, walk, hurt, dead, attack;
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
     public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
     public int solidAreaDefaultX, solidAreaDefaultY;
@@ -81,11 +81,7 @@ public class Entity
 
         if (this.type == 2 && contactPlayer == true)
         {
-            if (gamePanel.player.invincible == false)
-            {
-                gamePanel.player.life -= 1;
-                gamePanel.player.invincible = true;
-            }
+            damagePlayer(attackPower);
         }
 
         if (collisionOn == false)
@@ -115,9 +111,6 @@ public class Entity
                 case "attack":
                     spriteNum = (spriteNum < attack.length - 1) ? ++spriteNum : 0;
                     break;
-               /* case "fire":
-                    spriteNum = (spriteNum < fire.length - 1) ? ++spriteNum : 0;
-                    break;*/
                 default:
                     spriteNum = (spriteNum < walk.length - 1) ? ++spriteNum : 0;
             }
@@ -133,6 +126,17 @@ public class Entity
             }
         }
     }
+
+
+    public void damagePlayer(int attack)
+    {
+        if (gamePanel.player.invincible == false)
+        {
+            gamePanel.player.life -= 1;
+            gamePanel.player.invincible = true;
+        }
+    }
+
 
     public void draw(Graphics2D graphics2D)
     {
@@ -209,6 +213,8 @@ public class Entity
             else
             {
                 graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+                graphics2D.setColor(Color.BLACK);
+                graphics2D.drawRect(screenX+solidArea.x, screenY+solidArea.y, solidArea.width, solidArea.height);
             }
 
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));

@@ -3,6 +3,7 @@ package entity;
 import main.GamePanel;
 import main.KeyHandler;
 import object.OBJ_Bullet;
+import tile.Tile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -12,7 +13,7 @@ import java.io.IOException;
 
 public class Player extends Entity
 {
-    private int left_right = 0; //variable for player position (left/right)
+    public int left_right = 0; //variable for player position (left/right)
     KeyHandler keyHandler;
     private static Player INSTANCE;
 
@@ -132,6 +133,7 @@ public class Player extends Entity
         //CHECK TILE COLLISION
         collisionOn = false;
         gamePanel.collisionChecker.checkTile(this);
+        //contactDamageTile(9);
 
         //CHECK OBJECT COLLISION
         int objIndex = gamePanel.collisionChecker.checkObject(this, true);
@@ -263,13 +265,13 @@ public class Player extends Entity
     {
         if (index != 1000)
         {
-            String objectName = gamePanel.obj[index].name;
+            String objectName = gamePanel.obj[gamePanel.currentMap][index].name;
 
             switch (objectName)
             {
                 case "Key":
                     ++hasKey;
-                    gamePanel.obj[index] = null;
+                    gamePanel.obj[gamePanel.currentMap][index] = null;
                     break;
                 case "Door":
                     if (hasKey > 0)
@@ -277,18 +279,18 @@ public class Player extends Entity
                         switch (index)
                         {
                             case 0:
-                            case 4: gamePanel.obj[index].worldX -= gamePanel.tileSize;
-                            gamePanel.obj[index + 1].worldX += gamePanel.tileSize;
+                            case 4: gamePanel.obj[gamePanel.currentMap][index].worldX -= gamePanel.tileSize;
+                            gamePanel.obj[gamePanel.currentMap][index + 1].worldX += gamePanel.tileSize;
                             break;
                             case 1:
-                            case 5: gamePanel.obj[index].worldX += gamePanel.tileSize;
-                            gamePanel.obj[index - 1].worldX -= gamePanel.tileSize;
+                            case 5: gamePanel.obj[gamePanel.currentMap][index].worldX += gamePanel.tileSize;
+                            gamePanel.obj[gamePanel.currentMap][index - 1].worldX -= gamePanel.tileSize;
                             break;
-                            case 2: gamePanel.obj[index].worldY -= gamePanel.tileSize;
-                            gamePanel.obj[index + 1].worldY += gamePanel.tileSize;
+                            case 2: gamePanel.obj[gamePanel.currentMap][index].worldY -= gamePanel.tileSize;
+                            gamePanel.obj[gamePanel.currentMap][index + 1].worldY += gamePanel.tileSize;
                             break;
-                            case 3: gamePanel.obj[index].worldY += gamePanel.tileSize;
-                            gamePanel.obj[index - 1].worldY -= gamePanel.tileSize;
+                            case 3: gamePanel.obj[gamePanel.currentMap][index].worldY += gamePanel.tileSize;
+                            gamePanel.obj[gamePanel.currentMap][index - 1].worldY -= gamePanel.tileSize;
                             break;
                         }
                         --hasKey;
@@ -302,15 +304,15 @@ public class Player extends Entity
     {
         if (enemyIndex != 1000)
         {
-            if (gamePanel.space_troop[enemyIndex].invincible == false)
+            if (gamePanel.space_troop[2][enemyIndex].invincible == false)
             {
-                gamePanel.space_troop[enemyIndex].life -= 1;
-                gamePanel.space_troop[enemyIndex].invincible = true;
-                gamePanel.space_troop[enemyIndex].damageReaction();
+                gamePanel.space_troop[2][enemyIndex].life -= 1;
+                gamePanel.space_troop[2][enemyIndex].invincible = true;
+                gamePanel.space_troop[2][enemyIndex].damageReaction();
 
-                if (gamePanel.space_troop[enemyIndex].life <= 0)
+                if (gamePanel.space_troop[2][enemyIndex].life <= 0)
                 {
-                    gamePanel.space_troop[enemyIndex].dying = true;
+                    gamePanel.space_troop[2][enemyIndex].dying = true;
                 }
                 gamePanel.playSE(3);
             }
@@ -323,7 +325,20 @@ public class Player extends Entity
         {
             if (invincible == false)
             {
-                life -= 1;
+                --life;
+                invincible = true;
+                gamePanel.playSE(3);
+            }
+        }
+    }
+
+    public void contactDamageTile(int tileIndex)
+    {
+        if (tileIndex == 9)
+        {
+            if (invincible == false)
+            {
+                --life;
                 invincible = true;
                 gamePanel.playSE(3);
             }
@@ -335,7 +350,7 @@ public class Player extends Entity
         if (x != 1000)
         {
             gamePanel.gameState = gamePanel.dialogueState;
-            gamePanel.npc[x].speak();
+            gamePanel.npc[0][x].speak();
         }
         if (gamePanel.keyH.attackSpace == true)
         {

@@ -11,22 +11,28 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TileManager
 {
     GamePanel gamePanel;
     public Tile[] tile;
-    public int[][] mapTileNum;
+    public int[][][] mapTileNum;
 
     public TileManager(GamePanel gamePanel)
     {
         this.gamePanel = gamePanel;
 
         tile = new Tile[15];
-        mapTileNum = new int [gamePanel.maxWorldColumns][gamePanel.maxWorldRows];
+        mapTileNum = new int [gamePanel.maxMap][gamePanel.maxWorldColumns][gamePanel.maxWorldRows];
 
         getTileImage();
-        loadMap("maps/map02.txt");
+        loadMap("maps/map1.txt", 0);
+        loadMap("maps/map2.txt", 1);
+        loadMap("maps/map3.txt", 2);
+        loadMap("maps/map4.txt", 3);
+        scheduleTileChange();
     }
 
     public void getTileImage()
@@ -43,7 +49,7 @@ public class TileManager
             tile[1].image = img1.getSubimage(0, 80, 31, 48);
             tile[1].collision = true;
 
-            tile[2] = new Tile(); //Platform with orange square in center
+            tile[2] = new Tile(); //Platform with orange square in center - Computer Floor
             tile[2].image = img1.getSubimage(256, 0, 63, 63);
 
             tile[3] = new Tile(); //Space Photo
@@ -54,16 +60,23 @@ public class TileManager
             tile[4].image = img1.getSubimage(64, 132, 32, 16);
 
             tile[5] = new Tile(); //Final level floor
-            tile[5].image = img1.getSubimage(128, 96, 30, 30);
+            tile[5].image = img1.getSubimage(192, 128, 31, 31);
 
             tile[6] = new Tile(); //Computer
-            tile[6].image = rotateImage(img1.getSubimage(31,80, 65, 48), 90);
+            tile[6].image = rotateImage(img1.getSubimage(32,80, 31, 48), -90);
             tile[6].collision = true;
 
             tile[7] = new Tile(); //Obstacle for hiding
-            tile[7].image = img1.getSubimage(96,144, 31, 47);
+            tile[7].image = img1.getSubimage(96,80, 31, 47);
             tile[7].collision = true;
 
+            tile[8] = new Tile(); //Computer Attack Mode
+            tile[8].image = rotateImage(img1.getSubimage(64, 80, 31, 48), -90);
+            tile[8].collision = true;
+
+            tile[9] = new Tile(); //Computer Attack Floor
+            tile[9].image = img1.getSubimage(128, 96, 31, 30);
+            tile[9].index = 9;
 
         }
         catch (IOException e)
@@ -71,6 +84,38 @@ public class TileManager
             e.printStackTrace();
         }
     }
+
+
+    private void scheduleTileChange()
+    {
+        Timer timer = new Timer();
+        final Tile aux1 = tile[6];
+        final Tile aux2 = tile[2];
+        timer.scheduleAtFixedRate(new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                if (aux1 == tile[6])
+                {
+                    tile[6] = tile[8];
+                }
+                else
+                {
+                    tile[6] = aux1;
+                }
+                if (aux2 == tile[2])
+                {
+                    tile[2] = tile[9];
+                }
+                else
+                {
+                    tile[2] = aux2;
+                }
+            }
+        }, 3000, 3000);
+    }
+
 
     public static BufferedImage rotateImage(BufferedImage image, double angle)
     {
@@ -95,24 +140,7 @@ public class TileManager
         return rotatedImage;
     }
 
-    public void setup(int index, String imagePath, boolean collision)
-    {
-        UtilityTool uTool = new UtilityTool();
-
-        try
-        {
-            tile[index] = new Tile();
-            tile[index].image = ImageIO.read(getClass().getClassLoader().getResourceAsStream("tiles/" + imagePath + ".png"));
-            tile[index].image = uTool.scaleImage(tile[index].image, gamePanel.tileSize, gamePanel.tileSize);
-            tile[index].collision = collision;
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadMap(String filePath)
+    public void loadMap(String filePath, int map)
     {
         try
         {
@@ -133,7 +161,7 @@ public class TileManager
 
                     int num = Integer.parseInt(numbers[col]);
 
-                    mapTileNum[col][row] = num;
+                    mapTileNum[map][col][row] = num;
                     ++col;
                 }
                 if (col == gamePanel.maxWorldColumns)
@@ -157,7 +185,7 @@ public class TileManager
 
         while(worldCol < gamePanel.maxWorldColumns && worldRow < gamePanel.maxWorldRows)
         {
-            int tileNum = mapTileNum[worldCol][worldRow];
+            int tileNum = mapTileNum[gamePanel.currentMap][worldCol][worldRow];
 
             int worldX = worldCol * gamePanel.tileSize;
             int worldY = worldRow * gamePanel.tileSize;

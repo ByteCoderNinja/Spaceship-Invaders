@@ -26,12 +26,14 @@ public class GamePanel extends JPanel implements Runnable
     //WORLD SETTINGS
     public final int maxWorldColumns = 54;
     public final int maxWorldRows = 52;
+    public final int maxMap = 10;
+    public int currentMap = 0;
 
     //FPS
     int FPS = 60;
 
     //SYSTEM
-    TileManager tileM = new TileManager(this);
+    public TileManager tileM = new TileManager(this);
     public KeyHandler keyH = new KeyHandler(this);
     Sound music = new Sound();
     Sound se = new Sound();
@@ -43,9 +45,9 @@ public class GamePanel extends JPanel implements Runnable
 
     //ENTITY AND OBJECT
     public Player player = Player.getInstance(this, keyH);
-    public Entity[] obj = new Entity[12];
-    public Entity[] npc = new Entity[10];
-    public Entity[] space_troop = new Entity[20];
+    public Entity[][] obj = new Entity[maxMap][12];
+    public Entity[][] npc = new Entity[maxMap][10];
+    public Entity[][] space_troop = new Entity[maxMap][50];
     public ArrayList<Entity> bullets = new ArrayList<>();
     ArrayList<Entity> entities = new ArrayList<>();
 
@@ -116,42 +118,42 @@ public class GamePanel extends JPanel implements Runnable
             //PLAYER
             player.update();
             //NPC
-            for (int i = 0; i < npc.length; ++i)
+            for (int i = 0; i < npc[0].length; ++i)
             {
-                if (npc[i] != null)
+                if (npc[0][i] != null)
                 {
-                    npc[i].update();
+                    npc[0][i].update();
                 }
             }
             //ENEMY
-            for (int i = 0; i < space_troop.length; ++i)
+            for (int i = 0; i < space_troop[2].length; ++i)
             {
-                if (space_troop[i] != null)
+                if (space_troop[2][i] != null)
                 {
-                    if (space_troop[i].alive == true && space_troop[i].dying == false)
+                    if (space_troop[2][i].alive == true && space_troop[2][i].dying == false)
                     {
-                        space_troop[i].update();
+                        space_troop[2][i].update();
                     }
-                    if (space_troop[i].alive == false)
+                    if (space_troop[2][i].alive == false)
                     {
-                        space_troop[i] = null;
+                        space_troop[2][i] = null;
                     }
                 }
             }
-
+            //BULLET
             for (int i = 0; i < bullets.size(); ++i)
             {
                 if (bullets.get(i) != null)
                 {
-                    bullets.get(i).update();
-                    /*if (bullets.get(i).collisionOn == false)
+                    collisionChecker.checkTile(bullets.get(i));
+                    if (bullets.get(i).collisionOn == false)
                     {
                         bullets.get(i).update();
                     }
-                    if (bullets.get(i).collisionOn == true)
+                    else
                     {
                         bullets.remove(i);
-                    }*/
+                    }
                 }
             }
         }
@@ -188,27 +190,27 @@ public class GamePanel extends JPanel implements Runnable
             //ADD ENTITIES TO THE LIST
             entities.add(player);
 
-            for (int i = 0; i < npc.length; ++i)
+            for (int i = 0; i < npc[0].length; ++i)
             {
-                if (npc[i] != null)
+                if (npc[0][i] != null)
                 {
-                    entities.add(npc[i]);
+                    entities.add(npc[0][i]);
                 }
             }
 
-            for (int i = 0; i < obj.length; ++i)
+            for (int i = 0; i < obj[currentMap].length; ++i)
             {
-                if (obj[i] != null)
+                if (obj[currentMap][i] != null)
                 {
-                    entities.add(obj[i]);
+                    entities.add(obj[currentMap][i]);
                 }
             }
 
-            for (int i = 0; i < space_troop.length; ++i)
+            for (int i = 0; i < space_troop[2].length; ++i)
             {
-                if (space_troop[i] != null)
+                if (space_troop[2][i] != null)
                 {
-                    entities.add(space_troop[i]);
+                    entities.add(space_troop[2][i]);
                 }
             }
 

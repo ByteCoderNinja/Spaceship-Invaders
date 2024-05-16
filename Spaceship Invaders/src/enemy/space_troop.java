@@ -2,6 +2,7 @@ package enemy;
 
 import entity.Entity;
 import main.GamePanel;
+import object.OBJ_Bullet;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -22,11 +23,13 @@ public class space_troop extends Entity
         speed = 1;
         maxLife = 6;
         life = maxLife;
+        bullet = new OBJ_Bullet(gamePanel);
+        left_right = 0;
 
         solidArea.x = 24*gamePanel.scale;
-        solidArea.y = 39*gamePanel.scale;
+        solidArea.y = 29*gamePanel.scale;
         solidArea.width = 20;
-        solidArea.height = 32;
+        solidArea.height = 62;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
@@ -70,13 +73,22 @@ public class space_troop extends Entity
             if (i > 50 && i <= 75)
             {
                 direction = "walk_left";
+                left_right = 1;
             }
             if (i > 75 && i <= 100)
             {
                 direction = "walk_right";
+                left_right = 0;
             }
 
             actionLockCounter = 0;
+
+        }
+        int i = new Random().nextInt(100)+1;
+        if (i > 99 && bullet.alive == false)
+        {
+            bullet.set(worldX, worldY, direction, false, this);
+            //gamePanel.bullets.add(bullet);
         }
     }
 

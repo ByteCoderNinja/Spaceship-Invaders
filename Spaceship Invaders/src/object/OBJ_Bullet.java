@@ -17,7 +17,7 @@ public class OBJ_Bullet extends Bullet
         this.gamePanel = gamePanel;
 
         name = "Bullet";
-        speed = 1;
+        speed = 5;
         maxLife = 80;
         life = maxLife;
         attackPower = 2;

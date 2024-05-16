@@ -68,6 +68,8 @@ public class KeyHandler implements KeyListener
                     gamePanel.stopMusic();
                     gamePanel.gameState = gamePanel.playState;
                     gamePanel.playMusic(0);
+                    gamePanel.player.setDefaultValues();
+                    gamePanel.setupGame();
                 }
                 if (gamePanel.ui.commandNumber == 1)
                 {
@@ -115,7 +117,13 @@ public class KeyHandler implements KeyListener
 
         if (code == KeyEvent.VK_R)
         {
-            gamePanel.tileM.loadMap("maps/map02.txt");
+            switch (gamePanel.currentMap)
+            {
+                case 0: gamePanel.tileM.loadMap("maps/map1.txt", 0);
+                case 1: gamePanel.tileM.loadMap("maps/map2.txt", 1);
+                case 2: gamePanel.tileM.loadMap("maps/map3.txt", 2);
+                case 3: gamePanel.tileM.loadMap("maps/map4.txt", 3);
+            }
         }
 
         //PAUSE STATE
