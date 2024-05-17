@@ -11,7 +11,7 @@ public class Entity
 {
     public GamePanel gamePanel;
     public int left_right = 0;
-    public BufferedImage[] idle, walk, hurt, dead, attack;
+    public BufferedImage[] idle, walk, dead, attack;
     public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
     public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
     public int solidAreaDefaultX, solidAreaDefaultY;
@@ -76,7 +76,10 @@ public class Entity
         gamePanel.collisionChecker.checkTile(this);
         gamePanel.collisionChecker.checkObject(this, false);
         gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
-        gamePanel.collisionChecker.checkEntity(this, gamePanel.space_troop);
+        if (this.type != 2)
+        {
+            gamePanel.collisionChecker.checkEntity(this, gamePanel.space_troop);
+        }
         boolean contactPlayer = gamePanel.collisionChecker.checkPlayer(this);
 
         if (this.type == 2 && contactPlayer == true)
@@ -179,10 +182,10 @@ public class Entity
             double hpBarValue = oneScale*life;
 
             graphics2D.setColor(new Color(0x201212));
-            graphics2D.fillRect(screenX + 69, screenY + 74, gamePanel.tileSize + 2, 12);
+            graphics2D.fillRect(screenX + 7, screenY - 15, gamePanel.tileSize + 2, 12);
 
             graphics2D.setColor(new Color(215, 0, 0, 255));
-            graphics2D.fillRect(screenX + 70, screenY + 75, (int)hpBarValue, 10);
+            graphics2D.fillRect(screenX + 7, screenY - 15, (int)hpBarValue, 10);
 
             ++hpBarCounter;
 
@@ -207,16 +210,16 @@ public class Entity
 
             if (name == "Space Troop")
             {
-                graphics2D.drawImage(image, screenX, screenY, 64*gamePanel.scale, 64*gamePanel.scale, null);
+                graphics2D.drawImage(image, screenX, screenY, 64, 64, null);
                 changeAlpha(graphics2D, 1F);
             }
             else
             {
                 graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
-                graphics2D.setColor(Color.BLACK);
-                graphics2D.drawRect(screenX+solidArea.x, screenY+solidArea.y, solidArea.width, solidArea.height);
             }
 
+        graphics2D.setColor(Color.BLACK);
+        graphics2D.drawRect(screenX+solidArea.x, screenY+solidArea.y, solidArea.width, solidArea.height);
         graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
     }
 

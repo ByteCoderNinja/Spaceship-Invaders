@@ -70,6 +70,7 @@ public class KeyHandler implements KeyListener
                     gamePanel.playMusic(0);
                     gamePanel.player.setDefaultValues();
                     gamePanel.setupGame();
+                    gamePanel.currentMap = 0;
                 }
                 if (gamePanel.ui.commandNumber == 1)
                 {

@@ -61,6 +61,14 @@ public class EventHandler
             if (hit(0,17, 25, "walk_down") == true) {teleport(1, 15, 5);}
             if (hit(1,16, 7, "walk_up") == true) {teleport(0, 15, 23);}
             if (hit(1,17, 7, "walk_up") == true) {teleport(0, 15, 23);}
+            if (hit(1,26, 25, "walk_right") == true) {teleport(2, 6, 22);}
+            if (hit(1,26, 26, "walk_right") == true) {teleport(2, 6, 22);}
+            if (hit(2,8, 24, "walk_left") == true) {teleport(1, 24, 23);}
+            if (hit(2,8, 25, "walk_left") == true) {teleport(1, 24, 23);}
+            if (hit(2,9, 7, "walk_up") == true) {teleport(3, 7, 23);}
+            if (hit(2,10, 7, "walk_up") == true) {teleport(3, 7, 23);}
+            if (hit(3,8, 27, "walk_down") == true) {teleport(2, 8, 5);}
+            if (hit(3,9, 27, "walk_down") == true) {teleport(2, 8, 5);}
 
         }
     }

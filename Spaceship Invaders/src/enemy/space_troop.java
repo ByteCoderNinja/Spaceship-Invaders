@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Random;
 
+import static java.lang.Math.abs;
+
 public class space_troop extends Entity
 {
 
@@ -26,10 +28,10 @@ public class space_troop extends Entity
         bullet = new OBJ_Bullet(gamePanel);
         left_right = 0;
 
-        solidArea.x = 24*gamePanel.scale;
-        solidArea.y = 29*gamePanel.scale;
-        solidArea.width = 20;
-        solidArea.height = 62;
+        solidArea.x = 0;
+        solidArea.y = 0;
+        solidArea.width = 64;
+        solidArea.height = 64;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
@@ -41,11 +43,11 @@ public class space_troop extends Entity
     {
         try
         {
-            BufferedImage img = ImageIO.read(getClass().getClassLoader().getResourceAsStream("enemy/enemy.png"));
-            idle = cutImage(img,0,0, new int[]{64, 64, 64, 64, 64}, new int[]{64, 64, 64, 64, 64});
-            walk = cutImage(img, 0, 64, new int[]{64, 64, 64, 64, 64, 64, 64, 64}, new int[]{64, 64, 64, 64, 64, 64, 64, 64});
-            dead = cutImage(img, 0, 128, new int[]{64, 64, 64, 64, 64, 64, 64, 64}, new int[]{64, 64, 64, 64, 64, 64, 64, 64});
-            attack = cutImage(img, 0, 192, new int[]{64, 64}, new int[]{64, 64});
+            BufferedImage img = ImageIO.read(getClass().getClassLoader().getResourceAsStream("enemy/enemy_alien.png"));
+            idle = cutImage(img,0,0, new int[]{33, 33, 33, 33}, new int[]{32, 32, 32, 32});
+            walk = cutImage(img,0,0, new int[]{33, 33, 33, 33}, new int[]{32, 32, 32, 32});
+            dead = cutImage(img,0,0, new int[]{33, 33, 33, 33}, new int[]{32, 32, 32, 32});
+            attack = cutImage(img,0,0, new int[]{33, 33, 33, 33}, new int[]{32, 32, 32, 32});
         }
         catch(IOException e)
         {
@@ -56,40 +58,74 @@ public class space_troop extends Entity
 
     public void setAction()
     {
-        ++actionLockCounter;
-        if (actionLockCounter == 120)
-        {
-            Random random = new Random();
-            int i = random.nextInt(100) + 1;
+        if (gamePanel.currentMap == 2) {
+            int playerX = gamePanel.player.worldX + gamePanel.tileSize;
+            int playerY = gamePanel.player.worldY + gamePanel.tileSize;
+            int distX = abs(worldX - playerX);
+            int distY = abs(worldY - playerY);
 
-            if (i <= 25)
+            if (distX > distY)
             {
-                direction = "walk_up";
+                if (worldX < playerX)
+                {
+                    direction = "walk_right";
+                }
+                else if (worldX > playerX)
+                {
+                    direction = "walk_left";
+                }
             }
-            if (i > 25 && i <= 50)
+            else
             {
-                direction = "walk_down";
+                if (worldY < playerY)
+                {
+                    direction = "walk_down";
+                }
+                else
+                {
+                    direction = "walk_up";
+                }
             }
-            if (i > 50 && i <= 75)
-            {
-                direction = "walk_left";
-                left_right = 1;
-            }
-            if (i > 75 && i <= 100)
-            {
-                direction = "walk_right";
-                left_right = 0;
-            }
-
-            actionLockCounter = 0;
-
         }
-        int i = new Random().nextInt(100)+1;
-        if (i > 99 && bullet.alive == false)
+        else
         {
-            bullet.set(worldX, worldY, direction, false, this);
-            //gamePanel.bullets.add(bullet);
+            ++actionLockCounter;
+            if (actionLockCounter == 120)
+            {
+                Random random = new Random();
+                int i = random.nextInt(100) + 1;
+
+                if (i <= 25)
+                {
+                    direction = "walk_up";
+                }
+                if (i > 25 && i <= 50)
+                {
+                    direction = "walk_down";
+                }
+                if (i > 50 && i <= 75)
+                {
+                    direction = "walk_left";
+                    left_right = 1;
+                }
+                if (i > 75 && i <= 100)
+                {
+                    direction = "walk_right";
+                    left_right = 0;
+                }
+
+                actionLockCounter = 0;
+
+            }
+
+            int i = new Random().nextInt(100)+1;
+            if (i > 99 && bullet.alive == false)
+            {
+                bullet.set(worldX, worldY, direction, false, this);
+                gamePanel.bullets.add(bullet);
+            }
         }
+
     }
 
     public void damageReaction(GamePanel gamePanel)
