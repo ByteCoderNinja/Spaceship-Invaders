@@ -42,10 +42,16 @@ public class Bullet extends Entity
         if (user == gamePanel.player)
         {
             int monsterIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.space_troop);
+            int shipIndex = gamePanel.collisionChecker.checkEntity(this, gamePanel.space_ship);
             gamePanel.collisionChecker.checkObject(this, true);
             if (monsterIndex != 1000)
             {
                 gamePanel.player.damageEnemy(monsterIndex);
+                alive = false;
+            }
+            if (shipIndex != 1000)
+            {
+                gamePanel.player.damageShip(shipIndex);
                 alive = false;
             }
         }

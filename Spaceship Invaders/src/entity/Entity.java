@@ -2,10 +2,13 @@ package entity;
 
 import main.GamePanel;
 import main.UtilityTool;
+import tile.Tile;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Entity
 {
@@ -21,6 +24,7 @@ public class Entity
     String[] dialogues = new String[20];
 
     //STATE
+    public boolean up_down = false;
     public int worldX, worldY;
     public String direction = "walk_down";
     public int spriteNum = 1;
@@ -38,13 +42,14 @@ public class Entity
     public int invincibleCounter = 0;
     int dyingCounter = 0;
     int hpBarCounter = 0;
+    int explosionCounter = 0;
 
     //CHARACTER STATUS
     public int attackPower;
     public int maxLife;
     public int life;
     public int speed;
-    public int type; //// 0 = player, 1 = npc, 2 = enemy
+    public int type; //// 0 = player, 1 = npc, 2 = enemy, 3 = spaceship/boss
     public String name;
     public Bullet bullet;
 
@@ -74,13 +79,18 @@ public class Entity
 
         collisionOn = false;
         gamePanel.collisionChecker.checkTile(this);
+        boolean contactPlayer = false;
         gamePanel.collisionChecker.checkObject(this, false);
-        gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
-        if (this.type != 2)
+        if (this.type != 3)
+        {
+            gamePanel.collisionChecker.checkEntity(this, gamePanel.npc);
+            contactPlayer = gamePanel.collisionChecker.checkPlayer(this);
+        }
+
+        if (this.type != 2 && this.type != 3)
         {
             gamePanel.collisionChecker.checkEntity(this, gamePanel.space_troop);
         }
-        boolean contactPlayer = gamePanel.collisionChecker.checkPlayer(this);
 
         if (this.type == 2 && contactPlayer == true)
         {
@@ -113,6 +123,9 @@ public class Entity
                     break;
                 case "attack":
                     spriteNum = (spriteNum < attack.length - 1) ? ++spriteNum : 0;
+                    break;
+                case "dead":
+                    spriteNum = (spriteNum < dead.length - 1) ? ++spriteNum : 0;
                     break;
                 default:
                     spriteNum = (spriteNum < walk.length - 1) ? ++spriteNum : 0;
@@ -173,6 +186,9 @@ public class Entity
                         image = (left_right == 0) ? attack[spriteNum] : mirrorImage(attack[spriteNum]);
                     }
                     break;
+                case "dead":
+                    spriteNum = (spriteNum > dead.length - 1) ? 0 : spriteNum;
+                    image = dead[spriteNum];
             }
 
         //HPBar
@@ -196,6 +212,25 @@ public class Entity
             }
         }
 
+        if (type == 3 && hpBarOn == true)
+        {
+            double oneScale = (double)gamePanel.tileSize*4/maxLife;
+            double hpBarValue = oneScale*life;
+
+            graphics2D.setColor(new Color(0x201212));
+            graphics2D.fillRect(screenX, screenY - 15, gamePanel.tileSize*4, 12);
+
+            graphics2D.setColor(new Color(215, 0, 0, 255));
+            graphics2D.fillRect(screenX, screenY - 15, (int)hpBarValue, 10);
+
+            ++hpBarCounter;
+
+            if (hpBarCounter > 600)
+            {
+                hpBarCounter = 0;
+                hpBarOn = false;
+            }
+        }
 
             if (invincible == true)
             {
@@ -208,12 +243,23 @@ public class Entity
                 dyingAnimation(graphics2D);
             }
 
+            if (name == "Space Ship")
+            {
+                graphics2D.drawImage(image, screenX, screenY, 32*gamePanel.scale*2, 16*gamePanel.scale*2, null);
+                changeAlpha(graphics2D, 1F);
+            }
+            if (dying == true && type == 3 && explosionCounter < 5)
+            {
+                graphics2D.drawImage(dead[explosionCounter], screenX - 50, screenY - 80, gamePanel.tileSize * 6, gamePanel.tileSize * 6, null);
+                ++explosionCounter;
+            }
+
             if (name == "Space Troop")
             {
                 graphics2D.drawImage(image, screenX, screenY, 64, 64, null);
                 changeAlpha(graphics2D, 1F);
             }
-            else
+            if (name != "Space Ship" && name != "Space Troop")
             {
                 graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
             }
@@ -225,6 +271,8 @@ public class Entity
 
     private void dyingAnimation(Graphics2D graphics2D)
     {
+        int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
+        int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
         ++dyingCounter;
 
         int i = 5;
@@ -269,4 +317,16 @@ public class Entity
 
         return mirroredImage;
     }
+
+    public BufferedImage[] cutImage(BufferedImage img, int x, int y, int[] width, int[] height)
+    {
+        BufferedImage[] bufferedImages = new BufferedImage[width.length];
+        for (int i = 0; i < width.length; ++i)
+        {
+            bufferedImages[i] = img.getSubimage(x, y, width[i], height[i]);
+            x += width[i];
+        }
+        return bufferedImages;
+    }
+
 }

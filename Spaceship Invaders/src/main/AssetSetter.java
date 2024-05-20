@@ -1,6 +1,7 @@
 package main;
 
 import enemy.space_troop;
+import enemy.spaceship;
 import entity.NPC_Alien;
 import object.OBJ_AutoDestroyButton;
 import object.OBJ_Bullet;
@@ -108,6 +109,9 @@ public class AssetSetter
         gamePanel.space_troop[2][i].worldX = gamePanel.tileSize*18;
         gamePanel.space_troop[2][i].worldY = gamePanel.tileSize*17;
         ++i;
+        gamePanel.space_ship[3][0] = new spaceship(gamePanel);
+        gamePanel.space_ship[3][0].worldX = gamePanel.tileSize*22 - 5;
+        gamePanel.space_ship[3][0].worldY = gamePanel.tileSize*12;
     }
 
 }

@@ -1,5 +1,6 @@
 package main;
 
+import enemy.space_troop;
 import entity.Bullet;
 import entity.Entity;
 import entity.Player;
@@ -7,9 +8,8 @@ import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
+import java.util.Timer;
 
 public class GamePanel extends JPanel implements Runnable
 {
@@ -31,6 +31,7 @@ public class GamePanel extends JPanel implements Runnable
 
     //FPS
     int FPS = 60;
+    int spwnConter = 0;
 
     //SYSTEM
     public TileManager tileM = new TileManager(this);
@@ -48,8 +49,9 @@ public class GamePanel extends JPanel implements Runnable
     public Entity[][] obj = new Entity[maxMap][12];
     public Entity[][] npc = new Entity[maxMap][10];
     public Entity[][] space_troop = new Entity[maxMap][50];
+    public Entity[][] space_ship = new Entity[maxMap][20];
     public ArrayList<Entity> bullets = new ArrayList<>();
-    ArrayList<Entity> entities = new ArrayList<>();
+    public ArrayList<Entity> entities = new ArrayList<>();
 
     //GAME STATE
     public final int titleState = 0;
@@ -125,18 +127,37 @@ public class GamePanel extends JPanel implements Runnable
                     npc[currentMap][i].update();
                 }
             }
+            if (space_ship[3][0] != null && currentMap == 3)
+            {
+                spawnEnemyTimer();
+            }
             //ENEMY
             for (int i = 0; i < space_troop[currentMap].length; ++i)
             {
                 if (space_troop[currentMap][i] != null)
                 {
-                    if (space_troop[currentMap][i].alive == true && space_troop[2][i].dying == false)
+                    if (space_troop[currentMap][i].alive == true && space_troop[currentMap][i].dying == false)
                     {
                         space_troop[currentMap][i].update();
                     }
                     if (space_troop[currentMap][i].alive == false)
                     {
                         space_troop[currentMap][i] = null;
+                    }
+                }
+            }
+            //SpaceShip
+            for (int i = 0; i < space_ship[currentMap].length; ++i)
+            {
+                if (space_ship[currentMap][i] != null)
+                {
+                    if (space_ship[currentMap][i].alive == true && space_ship[currentMap][i].dying == false)
+                    {
+                        space_ship[currentMap][i].update();
+                    }
+                    if (space_ship[currentMap][i].alive == false)
+                    {
+                        space_ship[currentMap][i] = null;
                     }
                 }
             }
@@ -211,6 +232,14 @@ public class GamePanel extends JPanel implements Runnable
                 if (space_troop[currentMap][i] != null)
                 {
                     entities.add(space_troop[currentMap][i]);
+                }
+            }
+
+            for (int i = 0; i < space_ship[currentMap].length; ++i)
+            {
+                if (space_ship[currentMap][i] != null)
+                {
+                    entities.add(space_ship[currentMap][i]);
                 }
             }
 
@@ -289,5 +318,26 @@ public class GamePanel extends JPanel implements Runnable
     {
         se.setFile(i);
         se.play();
+    }
+
+    public void spawnEnemyTimer()
+    {
+        ++spwnConter;
+        if(spwnConter > 360)
+        {
+                for (int i = 0; i < space_troop[currentMap].length;++i)
+                {
+                    if (space_troop[currentMap][i] == null)
+                    {
+                        space_troop[currentMap][i] = new space_troop(keyH.gamePanel);
+                        space_troop[currentMap][i].worldX = space_ship[currentMap][0].worldX;
+                        space_troop[currentMap][i].worldY = space_ship[currentMap][0].worldY;
+                        break;
+
+                    }
+                }
+                spwnConter = 0;
+            }
+
     }
 }

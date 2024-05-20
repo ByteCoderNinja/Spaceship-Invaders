@@ -3,11 +3,9 @@ package entity;
 import main.GamePanel;
 import main.KeyHandler;
 import object.OBJ_Bullet;
-import tile.Tile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -61,7 +59,7 @@ public class Player extends Entity
     {
         worldX = gamePanel.tileSize*8;
         worldY = gamePanel.tileSize*7;
-        speed = 4;
+        speed = 10;
         direction = "idle";
 
         //PLAYER STATUS
@@ -85,18 +83,6 @@ public class Player extends Entity
         {
             e.printStackTrace();
         }
-    }
-
-
-    public BufferedImage[] cutImage(BufferedImage img, int x, int y, int[] width, int[] height)
-    {
-        BufferedImage[] bufferedImages = new BufferedImage[width.length];
-        for (int i = 0; i < width.length; ++i)
-        {
-            bufferedImages[i] = img.getSubimage(x, y, width[i], height[i]);
-            x += width[i];
-        }
-        return bufferedImages;
     }
 
 
@@ -304,20 +290,41 @@ public class Player extends Entity
     {
         if (enemyIndex != 1000)
         {
-            if (gamePanel.space_troop[2][enemyIndex].invincible == false)
+            if (gamePanel.space_troop[gamePanel.currentMap][enemyIndex].invincible == false)
             {
-                gamePanel.space_troop[2][enemyIndex].life -= 1;
-                gamePanel.space_troop[2][enemyIndex].invincible = true;
-                gamePanel.space_troop[2][enemyIndex].damageReaction();
+                gamePanel.space_troop[gamePanel.currentMap][enemyIndex].life -= 1;
+                gamePanel.space_troop[gamePanel.currentMap][enemyIndex].invincible = true;
+                gamePanel.space_troop[gamePanel.currentMap][enemyIndex].damageReaction();
 
-                if (gamePanel.space_troop[2][enemyIndex].life <= 0)
+                if (gamePanel.space_troop[gamePanel.currentMap][enemyIndex].life <= 0)
                 {
-                    gamePanel.space_troop[2][enemyIndex].dying = true;
+                    gamePanel.space_troop[gamePanel.currentMap][enemyIndex].dying = true;
                 }
                 gamePanel.playSE(3);
             }
         }
     }
+
+    public void damageShip(int shipIndex)
+    {
+        if (shipIndex != 1000)
+        {
+            if (gamePanel.space_ship[gamePanel.currentMap][shipIndex].invincible == false)
+            {
+                gamePanel.space_ship[gamePanel.currentMap][shipIndex].life -= 1;
+                gamePanel.space_ship[gamePanel.currentMap][shipIndex].invincible = true;
+                gamePanel.space_ship[gamePanel.currentMap][shipIndex].damageReaction();
+
+                if (gamePanel.space_ship[gamePanel.currentMap][shipIndex].life <= 0)
+                {
+                    gamePanel.space_ship[gamePanel.currentMap][shipIndex].dying = true;
+                }
+                gamePanel.playSE(3);
+            }
+        }
+    }
+
+
 
     public void contactEnemy(int enemyIndex)
     {

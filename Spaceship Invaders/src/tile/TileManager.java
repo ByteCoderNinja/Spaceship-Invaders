@@ -113,7 +113,7 @@ public class TileManager
                     tile[2] = aux2;
                 }
             }
-        }, 3000, 3000);
+        }, 1500, 1500);
     }
 
 
