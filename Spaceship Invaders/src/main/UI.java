@@ -15,6 +15,7 @@ public class UI
     Graphics2D graphics2D;
     Font arial_40, arial_80B;
     BufferedImage heart_full, heart_half, heart_blank;
+    Font speedy;
     public boolean messageOn = false;
     public String message = "";
     int messageCounter = 0;
@@ -28,6 +29,18 @@ public class UI
     {
         this.gamePanel = gamePanel;
 
+        try
+        {
+            speedy = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(getClass().getResourceAsStream("/font/SpeedyRegular.ttf"))).deriveFont(Font.PLAIN, 40);
+        }
+        catch (FontFormatException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
         arial_40 = new Font("Arial", Font.PLAIN, 40);
         arial_80B = new Font("Arial", Font.BOLD, 70);
 
@@ -49,9 +62,8 @@ public class UI
     {
         this.graphics2D = graphics2D;
 
-        graphics2D.setFont(arial_40);
         graphics2D.setColor(Color.white);
-
+        graphics2D.setFont(speedy);
         //TITLE STATE
         if (gamePanel.gameState == gamePanel.titleState)
         {
@@ -76,6 +88,115 @@ public class UI
         {
             drawPlayerLife();
             drawDialogueScreen();
+        }
+
+        //GAME OVER STATE
+        if (gamePanel.gameState == gamePanel.gameOverState)
+        {
+            drawGameOverScreen();
+        }
+
+        //GAME WON STATE
+        if (gamePanel.gameState == gamePanel.gameWonState)
+        {
+            drawGameWonScreen();
+        }
+}
+
+    private void drawGameWonScreen()
+    {
+        try
+        {
+            BufferedImage img = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("tiles/GameWonPhoto.jpg")));
+            graphics2D.drawImage(img, 0, 0, gamePanel.getWidth(), gamePanel.getHeight(), null);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        /*graphics2D.setColor(new Color(0,0,0,150));
+        graphics2D.fillRect(0,0,gamePanel.screenWidth, gamePanel.screenHeight);*/
+
+        int x;
+        int y;
+        String text;
+        graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD, 30f));
+
+        text = "Congratulations!";
+        graphics2D.setColor(Color.black);
+        x = getXforCenteredText(text);
+        y = gamePanel.tileSize*4;
+        graphics2D.drawString(text, x, y);
+        graphics2D.setColor(Color.white);
+        graphics2D.drawString(text, x-4, y-4);
+
+        text = "You saved the Space Ship!";
+        graphics2D.setColor(Color.black);
+        x = getXforCenteredText(text);
+        y = gamePanel.tileSize*5;
+        graphics2D.drawString(text, x, y);
+        graphics2D.setColor(Color.white);
+        graphics2D.drawString(text, x-4, y-4);
+
+        //Retry
+        graphics2D.setFont(graphics2D.getFont().deriveFont(50f));
+        text = "Back To Main Menu";
+        x = getXforCenteredText(text);
+        y += gamePanel.tileSize*4;
+        graphics2D.drawString(text, x, y);
+        if (commandNumber == 0)
+        {
+            graphics2D.drawString(">", x-40, y);
+        }
+
+        //Back to title screen
+        text = "Quit";
+        x = getXforCenteredText(text);
+        y += 55;
+        graphics2D.drawString(text, x, y);
+        if (commandNumber == 1)
+        {
+            graphics2D.drawString(">", x-40, y);
+        }
+    }
+
+    private void drawGameOverScreen()
+    {
+        graphics2D.setColor(new Color(0,0,0,150));
+        graphics2D.fillRect(0,0,gamePanel.screenWidth, gamePanel.screenHeight);
+
+        int x;
+        int y;
+        String text;
+        graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD, 50f));
+
+        text = "Game Over";
+        graphics2D.setColor(Color.black);
+        x = getXforCenteredText(text);
+        y = gamePanel.tileSize*4;
+        graphics2D.drawString(text, x, y);
+        graphics2D.setColor(Color.white);
+        graphics2D.drawString(text, x-4, y-4);
+
+        //Retry
+        graphics2D.setFont(graphics2D.getFont().deriveFont(50f));
+        text = "Retry";
+        x = getXforCenteredText(text);
+        y += gamePanel.tileSize*4;
+        graphics2D.drawString(text, x, y);
+        if (commandNumber == 0)
+        {
+            graphics2D.drawString(">", x-40, y);
+        }
+
+        //Back to title screen
+        text = "Quit";
+        x = getXforCenteredText(text);
+        y += 55;
+        graphics2D.drawString(text, x, y);
+        if (commandNumber == 1)
+        {
+            graphics2D.drawString(">", x-40, y);
         }
     }
 
@@ -114,16 +235,19 @@ public class UI
         }
     }
 
-    private void drawTitleScreen() {
-        try {
+    private void drawTitleScreen()
+    {
+        try
+        {
             BufferedImage img = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("tiles/MenuPhoto.png"))).getSubimage(0, 80, 714, 394);
             graphics2D.drawImage(img, 0, 0, 766, 576, null);
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
         }
-        //graphics2D.fillRect(0, 0, gamePanel.screenWidth, gamePanel.screenHeight);
 
-        graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD, 76F));
+        graphics2D.setFont(graphics2D.getFont().deriveFont(Font.BOLD, 50F));
         String text = "Spaceship Invaders";
         int x = getXforCenteredText(text);
         int y = gamePanel.tileSize * 3;

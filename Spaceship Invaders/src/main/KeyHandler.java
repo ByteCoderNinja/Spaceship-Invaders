@@ -143,6 +143,85 @@ public class KeyHandler implements KeyListener
                 gamePanel.gameState = gamePanel.playState;
             }
         }
+        //GAME OVER STATE
+        else if (gamePanel.gameState == gamePanel.gameOverState)
+        {
+            gameOverState(code);
+        }
+        //GAME WON STATE
+        else if (gamePanel.gameState == gamePanel.gameWonState)
+        {
+            gameWonState(code);
+        }
+    }
+
+    private void gameWonState(int code)
+    {
+        if (code  == KeyEvent.VK_UP)
+        {
+            --gamePanel.ui.commandNumber;
+            if (gamePanel.ui.commandNumber < 0)
+            {
+                gamePanel.ui.commandNumber = 1;
+            }
+        }
+        if (code  == KeyEvent.VK_DOWN)
+        {
+            ++gamePanel.ui.commandNumber;
+            if (gamePanel.ui.commandNumber > 1)
+            {
+                gamePanel.ui.commandNumber = 0;
+            }
+        }
+        if (code == KeyEvent.VK_ENTER)
+        {
+            if (gamePanel.ui.commandNumber == 0)
+            {
+                gamePanel.gameState = gamePanel.titleState;
+                gamePanel.ui.commandNumber = 0;
+                gamePanel.ui.hasEntered = false;
+                gamePanel.restart();
+            }
+            else if (gamePanel.ui.commandNumber == 1)
+            {
+                System.exit(0);
+            }
+        }
+    }
+
+    private void gameOverState(int code)
+    {
+        if (code  == KeyEvent.VK_UP)
+        {
+            --gamePanel.ui.commandNumber;
+            if (gamePanel.ui.commandNumber < 0)
+            {
+                gamePanel.ui.commandNumber = 1;
+            }
+        }
+        if (code  == KeyEvent.VK_DOWN)
+        {
+            ++gamePanel.ui.commandNumber;
+            if (gamePanel.ui.commandNumber > 1)
+            {
+                gamePanel.ui.commandNumber = 0;
+            }
+        }
+        if (code == KeyEvent.VK_ENTER)
+        {
+            if (gamePanel.ui.commandNumber == 0)
+            {
+                gamePanel.gameState = gamePanel.playState;
+                gamePanel.retry();
+            }
+            else if (gamePanel.ui.commandNumber == 1)
+            {
+                gamePanel.gameState = gamePanel.titleState;
+                gamePanel.ui.commandNumber = 0;
+                gamePanel.ui.hasEntered = false;
+                gamePanel.restart();
+            }
+        }
     }
 
     @Override

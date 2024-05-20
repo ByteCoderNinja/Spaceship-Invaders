@@ -59,13 +59,26 @@ public class Player extends Entity
     {
         worldX = gamePanel.tileSize*8;
         worldY = gamePanel.tileSize*7;
-        speed = 10;
+        speed = 6;
         direction = "idle";
 
         //PLAYER STATUS
         maxLife = 6;
         life = maxLife;
         bullet = new OBJ_Bullet(gamePanel);
+    }
+
+    public void setDefaultPositions()
+    {
+        worldX = gamePanel.tileSize*8;
+        worldY = gamePanel.tileSize*7;
+        direction = "walk_down";
+    }
+
+    public void restoreLife()
+    {
+        life = maxLife;
+        invincible = false;
     }
 
 
@@ -164,7 +177,8 @@ public class Player extends Entity
                 case "attack":
                     spriteNum = (spriteNum < attack.length - 1) ? ++spriteNum : 0;
                     bullet = new OBJ_Bullet(gamePanel);
-                    bullet.set(worldX + gamePanel.tileSize*2 + 15, worldY*2 + 6, direction, true, this);
+                    gamePanel.playSE(5);
+                    bullet.set(worldX + gamePanel.tileSize*2 + 15, worldY + gamePanel.tileSize*2 + 6, direction, true, this);
                     gamePanel.bullets.add(bullet);
                     break;
                 default:
@@ -172,12 +186,12 @@ public class Player extends Entity
             }
         }
 
-        if (gamePanel.keyH.attackSpace == true)
+        /*if (gamePanel.keyH.attackSpace == true)
         {
             bullet.set(worldX + gamePanel.tileSize*2 + 15, worldY + gamePanel.tileSize*2 + 6, direction, true, this);
 
             gamePanel.bullets.add(bullet);
-        }
+        }*/
 
         if (gamePanel.keyH.attackSpace == true && bullet.alive == false)
         {
@@ -196,6 +210,11 @@ public class Player extends Entity
                 invincible = false;
                 invincibleCounter = 0;
             }
+        }
+
+        if (life <= 0)
+        {
+            gamePanel.gameState = gamePanel.gameOverState;
         }
     }
 
@@ -319,7 +338,6 @@ public class Player extends Entity
                 {
                     gamePanel.space_ship[gamePanel.currentMap][shipIndex].dying = true;
                 }
-                gamePanel.playSE(3);
             }
         }
     }
@@ -329,19 +347,6 @@ public class Player extends Entity
     public void contactEnemy(int enemyIndex)
     {
         if (enemyIndex != 1000)
-        {
-            if (invincible == false)
-            {
-                --life;
-                invincible = true;
-                gamePanel.playSE(3);
-            }
-        }
-    }
-
-    public void contactDamageTile(int tileIndex)
-    {
-        if (tileIndex == 9)
         {
             if (invincible == false)
             {

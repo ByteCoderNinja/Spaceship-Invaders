@@ -7,6 +7,7 @@ import tile.Tile;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 

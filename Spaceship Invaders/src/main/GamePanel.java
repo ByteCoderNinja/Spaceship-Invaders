@@ -56,10 +56,11 @@ public class GamePanel extends JPanel implements Runnable
     //GAME STATE
     public final int titleState = 0;
     public int gameState = titleState;
-
     public final int playState = 1;
     public final int pauseState = 2;
     public final int dialogueState = 3;
+    public final int gameOverState = 4;
+    public final int gameWonState = 5;
 
     public GamePanel()
     {
@@ -158,6 +159,7 @@ public class GamePanel extends JPanel implements Runnable
                     if (space_ship[currentMap][i].alive == false)
                     {
                         space_ship[currentMap][i] = null;
+                        gameState = gameWonState;
                     }
                 }
             }
@@ -320,6 +322,25 @@ public class GamePanel extends JPanel implements Runnable
         se.play();
     }
 
+    public void retry()
+    {
+        player.setDefaultPositions();
+        player.restoreLife();
+        assetSetter.setNPC();
+        assetSetter.setMarineTroop();
+    }
+
+
+    public void restart()
+    {
+        currentMap = 0;
+        player.setDefaultValues();
+        player.setDefaultPositions();
+        assetSetter.setNPC();
+        assetSetter.setMarineTroop();
+        assetSetter.setObject();
+    }
+
     public void spawnEnemyTimer()
     {
         ++spwnConter;
@@ -338,6 +359,5 @@ public class GamePanel extends JPanel implements Runnable
                 }
                 spwnConter = 0;
             }
-
     }
 }
