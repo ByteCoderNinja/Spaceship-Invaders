@@ -78,6 +78,14 @@ public class TileManager
             tile[9].image = img1.getSubimage(128, 96, 31, 30);
             tile[9].index = 9;
 
+            tile[10] = new Tile(); //Computer
+            tile[10].image = rotateImage(img1.getSubimage(32,80, 31, 48), 90);
+            tile[10].collision = true;
+
+            tile[11] = new Tile(); //Simple platform collision
+            tile[11].image = img1.getSubimage(191, 31,33, 33);
+            tile[11].collision = true;
+
         }
         catch (IOException e)
         {

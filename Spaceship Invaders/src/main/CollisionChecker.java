@@ -62,7 +62,7 @@ public class CollisionChecker
                 {
                     if (entity.invincible == false)
                     {
-                        --entity.life;
+                        entity.life -= 2;
                         entity.invincible = true;
                         gamePanel.playSE(3);
                     }

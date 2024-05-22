@@ -18,6 +18,7 @@ public class Sound
         soundURL[3] = getClass().getClassLoader().getResource("sound/Damage Sound effect.wav");
         soundURL[4] = getClass().getClassLoader().getResource("sound/MenuMusic.wav");
         soundURL[5] = getClass().getClassLoader().getResource("sound/Weapon Sound_1.wav");
+        soundURL[6] = getClass().getClassLoader().getResource("sound/FinalLevelSound.wav");
 
     }
 

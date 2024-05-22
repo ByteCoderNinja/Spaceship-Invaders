@@ -1,15 +1,15 @@
 package main;
 
 import enemy.space_troop;
-import entity.Bullet;
 import entity.Entity;
+import entity.EntityFactory;
 import entity.Player;
+import object.OBJ_key;
 import tile.TileManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.Timer;
 
 public class GamePanel extends JPanel implements Runnable
 {
@@ -28,10 +28,12 @@ public class GamePanel extends JPanel implements Runnable
     public final int maxWorldRows = 52;
     public final int maxMap = 10;
     public int currentMap = 0;
+    DataBase dataBase = new DataBase("Baza de Date", this);
 
     //FPS
     int FPS = 60;
     int spwnConter = 0;
+    int keyCounter = 0;
 
     //SYSTEM
     public TileManager tileM = new TileManager(this);
@@ -46,10 +48,11 @@ public class GamePanel extends JPanel implements Runnable
 
     //ENTITY AND OBJECT
     public Player player = Player.getInstance(this, keyH);
-    public Entity[][] obj = new Entity[maxMap][12];
-    public Entity[][] npc = new Entity[maxMap][10];
-    public Entity[][] space_troop = new Entity[maxMap][50];
-    public Entity[][] space_ship = new Entity[maxMap][20];
+    public Entity[][] obj = EntityFactory.createObj();
+    public Entity[][] npc = EntityFactory.createNPC();
+    public Entity[][] space_troop = EntityFactory.createEnemy();
+    public Entity[][] space_ship = EntityFactory.createBoss();
+
     public ArrayList<Entity> bullets = new ArrayList<>();
     public ArrayList<Entity> entities = new ArrayList<>();
 
@@ -185,6 +188,25 @@ public class GamePanel extends JPanel implements Runnable
         {
             //nothing
         }
+
+        int k = 0;
+        for (int j = 0; j < space_troop.length; ++j)
+        {
+            if (space_troop[2][j] != null && space_troop[2][j].alive == true)
+            {
+                k = 0;
+                break;
+            }
+            k = 1;
+        }
+        if (k == 1 && obj[2][obj.length] == null && keyCounter == 0)
+        {
+            obj[2][obj.length] = new OBJ_key(this);
+            ++keyCounter;
+            obj[2][obj.length].worldX = tileSize * 16;
+            obj[2][obj.length].worldY = tileSize * 18;
+        }
+
     }
 
 
@@ -297,7 +319,7 @@ public class GamePanel extends JPanel implements Runnable
             graphics2d.drawString("WorldX" + player.worldX, x, y); y += lineHeight;
             graphics2d.drawString("WorldY" + player.worldY, x, y); y += lineHeight;
             graphics2d.drawString("Col" + (player.worldX + player.solidArea.x)/tileSize, x, y); y += lineHeight;
-            graphics2d.drawString("Row" + (player.worldX + player.solidArea.y)/tileSize, x, y); y += lineHeight;
+            graphics2d.drawString("Row" + (player.worldY + player.solidArea.y)/tileSize, x, y); y += lineHeight;
             graphics2d.drawString("Draw Time: " + passed, x, y);
         }
 
@@ -324,7 +346,18 @@ public class GamePanel extends JPanel implements Runnable
 
     public void retry()
     {
-        player.setDefaultPositions();
+        switch (currentMap)
+        {
+            case 1: player.worldX = 15 * tileSize;
+            player.worldY = tileSize * 6;
+            break;
+            case 2: player.worldX = 7 * tileSize;
+            player.worldY = 23 * tileSize;
+            break;
+            case 3: player.worldX = 7 * tileSize;
+            player.worldY = 23 * tileSize;
+            break;
+        }
         player.restoreLife();
         assetSetter.setNPC();
         assetSetter.setMarineTroop();

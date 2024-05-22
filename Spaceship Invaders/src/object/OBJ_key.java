@@ -8,11 +8,9 @@ import java.io.IOException;
 
 public class OBJ_key extends Entity
 {
-
     public OBJ_key(GamePanel gamePanel)
     {
         super(gamePanel);
-
         name = "Key";
         try
         {

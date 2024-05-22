@@ -3,8 +3,6 @@ package main;
 import enemy.space_troop;
 import enemy.spaceship;
 import entity.NPC_Alien;
-import object.OBJ_AutoDestroyButton;
-import object.OBJ_Bullet;
 import object.OBJ_Door;
 import object.OBJ_key;
 
@@ -49,12 +47,8 @@ public class AssetSetter
         gamePanel.obj[0][i].worldY = gamePanel.tileSize*13;
         ++i;
         gamePanel.obj[1][i] = new OBJ_key(gamePanel);
-        gamePanel.obj[1][i].worldX = gamePanel.tileSize*15;
-        gamePanel.obj[1][i].worldY = gamePanel.tileSize*26;
-        ++i;
-        gamePanel.obj[2][i] = new OBJ_key(gamePanel);
-        gamePanel.obj[2][i].worldX = gamePanel.tileSize*25;
-        gamePanel.obj[2][i].worldY = gamePanel.tileSize*8;
+        gamePanel.obj[1][i].worldX = gamePanel.tileSize*19;
+        gamePanel.obj[1][i].worldY = gamePanel.tileSize*15;
         ++i;
     }
     public void setNPC()

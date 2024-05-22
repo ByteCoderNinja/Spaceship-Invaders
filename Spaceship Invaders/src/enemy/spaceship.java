@@ -17,7 +17,7 @@ public class spaceship extends Entity
         type = 3;
         name = "Space Ship";
         speed = 1;
-        maxLife = 3;
+        maxLife = 30;
         life = maxLife;
         left_right = 0;
 

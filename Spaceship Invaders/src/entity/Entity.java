@@ -2,14 +2,11 @@ package entity;
 
 import main.GamePanel;
 import main.UtilityTool;
-import tile.Tile;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
+
 
 public class Entity
 {
@@ -264,16 +261,10 @@ public class Entity
             {
                 graphics2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
             }
-
-        graphics2D.setColor(Color.BLACK);
-        graphics2D.drawRect(screenX+solidArea.x, screenY+solidArea.y, solidArea.width, solidArea.height);
-        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
     }
 
     private void dyingAnimation(Graphics2D graphics2D)
     {
-        int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
-        int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
         ++dyingCounter;
 
         int i = 5;

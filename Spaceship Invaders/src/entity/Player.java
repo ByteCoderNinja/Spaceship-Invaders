@@ -17,7 +17,7 @@ public class Player extends Entity
 
     public final int screenX;
     public final int screenY;
-    int hasKey = 0;
+    public int hasKey = 0;
     public int width;
     public int height;
 
@@ -301,6 +301,8 @@ public class Player extends Entity
                         --hasKey;
                     }
                     break;
+                case "AutoDestroyButton":
+                    --life;
             }
         }
     }

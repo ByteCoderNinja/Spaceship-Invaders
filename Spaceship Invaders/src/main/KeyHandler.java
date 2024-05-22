@@ -74,10 +74,16 @@ public class KeyHandler implements KeyListener
                 }
                 if (gamePanel.ui.commandNumber == 1)
                 {
-
+                    gamePanel.dataBase.loadData();
+                    UI.hasEntered = true;
+                    gamePanel.ui.commandNumber = -1;
+                    gamePanel.stopMusic();
+                    gamePanel.gameState = gamePanel.playState;
+                    gamePanel.playMusic(0);
                 }
                 if (gamePanel.ui.commandNumber == 2)
                 {
+                    gamePanel.dataBase.saveData();
                     System.exit(0);
                 }
             }

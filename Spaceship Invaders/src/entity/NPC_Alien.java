@@ -37,9 +37,9 @@ public class NPC_Alien extends Entity
     public void setDialogue()
     {
         dialogues[0] = "Hello, Jacob!";
-        dialogues[1] = "We've come to destroy this entire \nship!";
-        dialogues[2] = "There's nothing you can do to stop \nus!";
-        dialogues[3] = "Leave as soon as you can! You \nwon't survive if you try to save the \nspaceship!";
+        dialogues[1] = "We have come to destroy\nthis entire ship!";
+        dialogues[2] = "There is nothing you can\ndo to stop us!";
+        dialogues[3] = "Leave as soon as you can!\nYou will not survive if you\ntry to save the spaceship!";
     }
 
 
